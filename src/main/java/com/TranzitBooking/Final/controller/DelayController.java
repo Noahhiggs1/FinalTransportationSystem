@@ -4,6 +4,7 @@ import com.TranzitBooking.Final.model.nosql.DelayEvent;
 import com.TranzitBooking.Final.service.DelayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/delays")
@@ -13,11 +14,12 @@ public class DelayController {
     private DelayService delayService;
 
     @PostMapping("/report")
-    public DelayEvent reportDelay(@RequestParam Long routeId,
-                                   @RequestParam Long vehicleId,
-                                   @RequestParam String cause,
-                                   @RequestParam int delayMinutes) {
-        return delayService.createDelayEvent(routeId, vehicleId, cause, delayMinutes);
+    public DelayEvent reportDelay(@RequestParam String eventId,
+                                  @RequestParam String type,
+                                  @RequestParam String severity,
+                                  @RequestParam List<String> affectedLines,
+                                  @RequestParam int estimatedDelayMinutes) {
+        return delayService.createDelayEvent(eventId, type, severity, affectedLines, estimatedDelayMinutes);
     }
 
     @PostMapping("/assess")

@@ -2,28 +2,31 @@ package com.TranzitBooking.Final.model.nosql;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Document(collection = "crowd_logs")
 public class CrowdLog {
     @Id
     private String id;
-    private Long stationId;
-    private Long vehicleId;
-    private int passengerCount;
-    private String crowdLevel;
-    private LocalDateTime loggedAt;
+    private String logId;
+    private String stationName;
+    private int occupancyPercentage;
+    private String sensorId;
+    private String status;
+    private Date timestamp;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-    public Long getStationId() { return stationId; }
-    public void setStationId(Long stationId) { this.stationId = stationId; }
-    public Long getVehicleId() { return vehicleId; }
-    public void setVehicleId(Long vehicleId) { this.vehicleId = vehicleId; }
-    public int getPassengerCount() { return passengerCount; }
-    public void setPassengerCount(int passengerCount) { this.passengerCount = passengerCount; }
-    public String getCrowdLevel() { return crowdLevel; }
-    public void setCrowdLevel(String crowdLevel) { this.crowdLevel = crowdLevel; }
-    public LocalDateTime getLoggedAt() { return loggedAt; }
-    public void setLoggedAt(LocalDateTime loggedAt) { this.loggedAt = loggedAt; }
+    public String getLogId() { return logId; }
+    public void setLogId(String logId) { this.logId = logId; }
+    public String getStationName() { return stationName; }
+    public void setStationName(String stationName) { this.stationName = stationName; }
+    public int getOccupancyPercentage() { return occupancyPercentage; }
+    public void setOccupancyPercentage(int v) { this.occupancyPercentage = v; }
+    public String getSensorId() { return sensorId; }
+    public void setSensorId(String sensorId) { this.sensorId = sensorId; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public Date getTimestamp() { return timestamp; }
+    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 }
