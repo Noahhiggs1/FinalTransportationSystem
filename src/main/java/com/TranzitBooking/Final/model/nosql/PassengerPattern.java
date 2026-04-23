@@ -2,25 +2,31 @@ package com.TranzitBooking.Final.model.nosql;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.util.List;
+import java.util.Date;
 
 @Document(collection = "passenger_patterns")
 public class PassengerPattern {
     @Id
     private String id;
-    private Long userId;
-    private List<Long> frequentRoutes;
-    private List<String> peakHours;
-    private String preferredPaymentMethod;
+    private String routeId;
+    private String stationOrigin;
+    private String stationDestination;
+    private String peakHour;
+    private int averageVolume;
+    private Date lastUpdated;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-    public List<Long> getFrequentRoutes() { return frequentRoutes; }
-    public void setFrequentRoutes(List<Long> frequentRoutes) { this.frequentRoutes = frequentRoutes; }
-    public List<String> getPeakHours() { return peakHours; }
-    public void setPeakHours(List<String> peakHours) { this.peakHours = peakHours; }
-    public String getPreferredPaymentMethod() { return preferredPaymentMethod; }
-    public void setPreferredPaymentMethod(String preferredPaymentMethod) { this.preferredPaymentMethod = preferredPaymentMethod; }
+    public String getRouteId() { return routeId; }
+    public void setRouteId(String routeId) { this.routeId = routeId; }
+    public String getStationOrigin() { return stationOrigin; }
+    public void setStationOrigin(String v) { this.stationOrigin = v; }
+    public String getStationDestination() { return stationDestination; }
+    public void setStationDestination(String v) { this.stationDestination = v; }
+    public String getPeakHour() { return peakHour; }
+    public void setPeakHour(String peakHour) { this.peakHour = peakHour; }
+    public int getAverageVolume() { return averageVolume; }
+    public void setAverageVolume(int averageVolume) { this.averageVolume = averageVolume; }
+    public Date getLastUpdated() { return lastUpdated; }
+    public void setLastUpdated(Date lastUpdated) { this.lastUpdated = lastUpdated; }
 }

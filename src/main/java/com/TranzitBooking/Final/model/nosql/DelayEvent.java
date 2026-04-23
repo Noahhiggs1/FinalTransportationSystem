@@ -2,28 +2,35 @@ package com.TranzitBooking.Final.model.nosql;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 @Document(collection = "delay_events")
 public class DelayEvent {
     @Id
     private String id;
-    private Long routeId;
-    private Long vehicleId;
-    private String cause;
-    private int delayMinutes;
-    private LocalDateTime reportedAt;
+    private String eventId;
+    private String type;
+    private String severity;
+    private List<String> affectedLines;
+    private int estimatedDelayMinutes;
+    private String status;
+    private Date timestamp;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-    public Long getRouteId() { return routeId; }
-    public void setRouteId(Long routeId) { this.routeId = routeId; }
-    public Long getVehicleId() { return vehicleId; }
-    public void setVehicleId(Long vehicleId) { this.vehicleId = vehicleId; }
-    public String getCause() { return cause; }
-    public void setCause(String cause) { this.cause = cause; }
-    public int getDelayMinutes() { return delayMinutes; }
-    public void setDelayMinutes(int delayMinutes) { this.delayMinutes = delayMinutes; }
-    public LocalDateTime getReportedAt() { return reportedAt; }
-    public void setReportedAt(LocalDateTime reportedAt) { this.reportedAt = reportedAt; }
+    public String getEventId() { return eventId; }
+    public void setEventId(String eventId) { this.eventId = eventId; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getSeverity() { return severity; }
+    public void setSeverity(String severity) { this.severity = severity; }
+    public List<String> getAffectedLines() { return affectedLines; }
+    public void setAffectedLines(List<String> affectedLines) { this.affectedLines = affectedLines; }
+    public int getEstimatedDelayMinutes() { return estimatedDelayMinutes; }
+    public void setEstimatedDelayMinutes(int v) { this.estimatedDelayMinutes = v; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public Date getTimestamp() { return timestamp; }
+    public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 }
