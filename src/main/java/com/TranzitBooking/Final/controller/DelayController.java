@@ -8,6 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/delays")
+@CrossOrigin(origins = "http://localhost:3000")
 public class DelayController {
 
     @Autowired

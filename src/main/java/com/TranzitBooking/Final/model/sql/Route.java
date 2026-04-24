@@ -5,9 +5,11 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "route")
 public class Route {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long routeId;
+
     private String name;
     private String status;
 

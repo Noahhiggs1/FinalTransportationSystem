@@ -4,7 +4,6 @@ import com.TranzitBooking.Final.model.sql.Ticket;
 import com.TranzitBooking.Final.model.sql.Vehicle;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class BookingService {
