@@ -12,15 +12,15 @@ import java.util.List;
 public class VehicleController {
 
     @Autowired
-    private VehicleRepository VehicleRepository;
+    private VehicleRepository vehicleRepository;
 
     @GetMapping
     public List<Vehicle> getAllVehicles() {
-        return VehicleRepository.findAll();
+        return vehicleRepository.findAll();
     }
 
     @GetMapping("/route/{routeId}")
     public List<Vehicle> getVehiclesByRoute(@PathVariable Long routeId) {
-        return VehicleRepository.findByRouteId(routeId);
+        return vehicleRepository.findByRouteId(routeId);
     }
 }

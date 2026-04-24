@@ -16,6 +16,8 @@ public class UserProfile {
     private LocalDate dob;
     private String username;
     private String password;
+    private String role;
+    private Long employeeId;
 
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
@@ -33,4 +35,8 @@ public class UserProfile {
     public void setUsername(String username) { this.username = username; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+    public Long getEmployeeId() { return employeeId; }
+    public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
 }

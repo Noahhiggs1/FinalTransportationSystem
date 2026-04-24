@@ -4,11 +4,11 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-  const userEmail = sessionStorage.getItem('userEmail') || '';
+  const userName = sessionStorage.getItem('userName') || '';
+  const userRole = sessionStorage.getItem('userRole') || '';
 
   const handleLogout = () => {
-    sessionStorage.removeItem('isLoggedIn');
-    sessionStorage.removeItem('userEmail');
+    sessionStorage.clear();
     navigate('/login');
   };
 
@@ -28,11 +28,20 @@ export default function Navbar() {
       boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
       flexWrap: 'wrap'
     }}>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginRight: '2rem' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        marginRight: '2rem'
+      }}>
         <span style={{ fontSize: '1.8rem' }}>🚆</span>
         <div>
-          <div style={{ color: '#fff', fontWeight: 'bold', fontSize: '1.1rem', lineHeight: 1 }}>
+          <div style={{
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '1.1rem',
+            lineHeight: 1
+          }}>
             TranzitSystem
           </div>
           <div style={{ color: '#7a8fb5', fontSize: '0.7rem' }}>
@@ -64,12 +73,41 @@ export default function Navbar() {
         );
       })}
 
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      {/* Show My Account link when logged in */}
+      {isLoggedIn && (
+        <Link
+          to="/dashboard"
+          style={{
+            padding: '0.5rem 1.1rem',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            fontSize: '0.9rem',
+            fontWeight: location.pathname === '/dashboard' ? 'bold' : 'normal',
+            color: location.pathname === '/dashboard' ? '#1a1a2e' : '#cce0ff',
+            background: location.pathname === '/dashboard' ? '#ffffff' : 'transparent',
+            border: '1px solid transparent',
+          }}
+        >
+          👤 My Account
+        </Link>
+      )}
+
+      <div style={{
+        marginLeft: 'auto',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '1rem'
+      }}>
         {isLoggedIn ? (
           <>
-            <span style={{ color: '#7a8fb5', fontSize: '0.85rem' }}>
-              👤 {userEmail}
-            </span>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ color: '#fff', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                {userName}
+              </div>
+              <div style={{ color: '#7a8fb5', fontSize: '0.72rem' }}>
+                {userRole}
+              </div>
+            </div>
             <button
               onClick={handleLogout}
               style={{
