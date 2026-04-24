@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/admin")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
 
     @Autowired
