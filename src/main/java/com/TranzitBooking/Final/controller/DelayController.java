@@ -19,8 +19,24 @@ public class DelayController {
                                   @RequestParam String type,
                                   @RequestParam String severity,
                                   @RequestParam List<String> affectedLines,
-                                  @RequestParam int estimatedDelayMinutes) {
-        return delayService.createDelayEvent(eventId, type, severity, affectedLines, estimatedDelayMinutes);
+                                  @RequestParam int estimatedDelayMinutes,
+                                  @RequestParam(required = false, defaultValue = "") String incidentNarrative) {
+        return delayService.createDelayEvent(eventId, type, severity, affectedLines, estimatedDelayMinutes, incidentNarrative);
+    }
+
+    @GetMapping("/active")
+    public List<DelayEvent> getActiveDelays() {
+        return delayService.getActiveDelays();
+    }
+
+    @GetMapping("/line/{line}")
+    public List<DelayEvent> getDelaysByLine(@PathVariable String line) {
+        return delayService.getDelaysByLine(line);
+    }
+
+    @PutMapping("/resolve/{id}")
+    public DelayEvent resolveDelay(@PathVariable String id) {
+        return delayService.resolveDelay(id);
     }
 
     @PostMapping("/assess")

@@ -15,6 +15,7 @@ public class DelayEvent {
     private List<String> affectedLines;
     private int estimatedDelayMinutes;
     private String status;
+    private String incidentNarrative;
     private Date timestamp;
 
     public String getId() { return id; }
@@ -31,6 +32,8 @@ public class DelayEvent {
     public void setEstimatedDelayMinutes(int v) { this.estimatedDelayMinutes = v; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getIncidentNarrative() { return incidentNarrative; }
+    public void setIncidentNarrative(String incidentNarrative) { this.incidentNarrative = incidentNarrative; }
     public Date getTimestamp() { return timestamp; }
     public void setTimestamp(Date timestamp) { this.timestamp = timestamp; }
 }

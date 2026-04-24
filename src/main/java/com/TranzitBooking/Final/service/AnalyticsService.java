@@ -2,11 +2,21 @@ package com.TranzitBooking.Final.service;
 
 import com.TranzitBooking.Final.model.nosql.CrowdLog;
 import com.TranzitBooking.Final.model.nosql.PassengerPattern;
+import com.TranzitBooking.Final.repository.CrowdLogRepository;
+import com.TranzitBooking.Final.repository.PassengerPatternRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class AnalyticsService {
+
+    @Autowired
+    private CrowdLogRepository crowdLogRepository;
+
+    @Autowired
+    private PassengerPatternRepository passengerPatternRepository;
 
     public CrowdLog logCrowd(String logId, String stationName, String sensorId, int occupancyPercentage) {
         CrowdLog log = new CrowdLog();
@@ -22,10 +32,19 @@ public class AnalyticsService {
         } else {
             log.setStatus("Available");
         }
-        return log;
+        return crowdLogRepository.save(log);
     }
 
-    public PassengerPattern buildPattern(String routeId, String stationOrigin, String stationDestination, String peakHour, int averageVolume) {
+    public List<CrowdLog> getCrowdByStation(String stationName) {
+        return crowdLogRepository.findByStationName(stationName);
+    }
+
+    public List<CrowdLog> getCrowdByStatus(String status) {
+        return crowdLogRepository.findByStatus(status);
+    }
+
+    public PassengerPattern buildPattern(String routeId, String stationOrigin,
+                                         String stationDestination, String peakHour, int averageVolume) {
         PassengerPattern pattern = new PassengerPattern();
         pattern.setRouteId(routeId);
         pattern.setStationOrigin(stationOrigin);
@@ -33,6 +52,14 @@ public class AnalyticsService {
         pattern.setPeakHour(peakHour);
         pattern.setAverageVolume(averageVolume);
         pattern.setLastUpdated(new Date());
-        return pattern;
+        return passengerPatternRepository.save(pattern);
+    }
+
+    public List<PassengerPattern> getPatternsByRoute(String routeId) {
+        return passengerPatternRepository.findByRouteId(routeId);
+    }
+
+    public List<PassengerPattern> getAllPatterns() {
+        return passengerPatternRepository.findAll();
     }
 }
