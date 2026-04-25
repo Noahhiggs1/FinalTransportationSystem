@@ -1,0 +1,1 @@
+[{"_id":{"$oid":"69c43fb1588a328ccf901c15"},"event_id":"DEL-992","type":"Maintenance","severity":"High","affected_lines":["Blue","Silver"],"estimated_delay_minutes":25,"status":"Active","timestamp":{"$date":"2026-03-25T20:04:01.063Z"}}]
