@@ -1,0 +1,242 @@
+drop table if exists payment cascade;
+drop table if exists ticket cascade;
+drop table if exists vehicle cascade;
+drop table if exists routestation cascade;
+drop table if exists station cascade;
+drop table if exists route cascade;
+drop table if exists user_profile cascade;
+drop table if exists admin cascade;
+drop table if exists operator cascade;
+drop table if exists employee cascade;
+
+create table employee (
+    employee_id serial primary key,
+    salary decimal(10,2),
+    hours_worked int,
+    station varchar(100)
+);
+
+create table operator (
+    employee_id int primary key,
+    foreign key (employee_id) references employee(employee_id)
+);
+
+create table admin (
+    employee_id int primary key,
+    foreign key (employee_id) references employee(employee_id)
+);
+
+create table user_profile (
+    user_id serial primary key,
+    first_name varchar(50),
+    last_name varchar(50),
+    email varchar(100) unique,
+    telephone varchar(20),
+    dob date,
+    username varchar(50) unique,
+    password varchar(255)
+);
+
+create table route (
+    route_id serial primary key,
+    status varchar(50),
+    name varchar(100)
+);
+
+create table station (
+    station_id serial primary key,
+    station_name varchar(100),
+    city varchar(100),
+    state varchar(100)
+);
+
+create table routestation (
+    route_id int,
+    station_id int,
+    stop_sequence int check (stop_sequence > 0),
+    primary key (route_id, station_id),
+    foreign key (route_id) references route(route_id),
+    foreign key (station_id) references station(station_id)
+);
+
+create table vehicle (
+    vehicle_id serial primary key,
+    capacity int check (capacity >= 0),
+    occupied_seats int check (occupied_seats >= 0),
+    available_seats int check (available_seats >= 0),
+    route_id int,
+    employee_id int,
+    foreign key (route_id) references route(route_id),
+    foreign key (employee_id) references employee(employee_id)
+);
+ALTER TABLE vehicle ADD CONSTRAINT vehicle_capacity_check CHECK (capacity > 0);
+
+create table ticket (
+    ticket_id serial primary key,
+    seat_number varchar(10),
+    booking_status varchar(50),
+    booking_timestamp timestamp,
+    departure_time timestamp,
+    arrival_time timestamp,
+    trip_timestamp timestamp,
+    user_id int,
+    vehicle_id int,
+    foreign key (user_id) references user_profile(user_id),
+    foreign key (vehicle_id) references vehicle(vehicle_id)
+);
+alter table ticket
+add constraint unique_seat_trip
+unique (vehicle_id, seat_number);
+
+create table payment (
+    payment_id serial primary key,
+    method varchar(50),
+    amount decimal(10,2) check (amount > 0),
+    transaction_ref varchar(100),
+    status varchar(50),
+    ticket_id int unique,
+    foreign key (ticket_id) references ticket(ticket_id)
+);
+
+alter table employee
+add column first_name varchar(50),
+add column last_name varchar(50);
+
+alter sequence employee_employee_id_seq restart with 5263;
+alter sequence vehicle_vehicle_id_seq restart with 1101;
+
+insert into employee (salary, hours_worked, station, first_name, last_name)
+values
+(65000.00, 40, 'new york city', 'Kyla', 'Atkinson'),
+(90000.00, 45, 'new jersey', 'Aniya', 'Hopson'),
+(65000.00, 40, 'detroit', 'Ricki', 'Davis'),
+(65000.00, 40, 'washington dc', 'Nicolas', 'Smith'),
+(65000.00, 40, 'nashville', 'Noah', 'Hill');
+
+insert into operator (employee_id)
+values
+(5263),
+(5265),
+(5266),
+(5267);
+
+insert into admin (employee_id)
+values
+(5264);
+
+insert into user_profile (first_name, last_name, email, telephone, dob, username, password)
+values
+('Chris', 'Brown', 'chris.brown@email.com', '7574821936', '1989-05-05', 'cbrown3', 'ChristIsKing444'),
+('Nia', 'Long', 'nia.long@email.com', '3106648201', '1970-10-30', 'itsnia', 'Butterfly123'),
+('Beyonce', 'Knowles', 'beyonce.knowles@email.com', '2125097741', '1981-09-04', 'bknowles_', 'BeeHive81'),
+('Keke', 'Palmer', 'keke.palmer@email.com', '4047283159', '1993-08-26', 'keke.p', 'BigBossKeke'),
+('Michael', 'Jordan', 'michael.jordan@email.com', '7736152048', '1987-02-09', 'mjordan_87', 'ILoveDogs111'),
+('Teyana', 'Taylor', 'teyana.taylor@email.com', '6463928804', '1990-12-10', 'teyana.t', 'HarlemVibes90'),
+('Janelle', 'Monae', 'janelle.monae@email.com', '8164472305', '1985-12-01', 'j.monae', 'ElectricLady7'),
+('Meagan', 'Good', 'meagan.good@email.com', '3235801942', '1981-08-08', 'mgood_1', 'PrettyGirl88'),
+('Larenz', 'Tate', 'larenz.tate@email.com', '7739014652', '1975-09-08', 'ltate', 'SouthSide75'),
+('Regina', 'Hall', 'regina.hall@email.com', '2027443180', '1970-12-12', 'regina.h', 'FunnyLady12'),
+('Naturi', 'Naughton', 'naturi.naughton@email.com', '9734186207', '1984-05-20', 'nnaughton', '3LWforever'),
+('Omari', 'Hardwick', 'omari.hardwick@email.com', '9015528174', '1974-01-09', 'o_hardwick', 'GhostMode74'),
+('Taraji', 'Henson', 'taraji.henson@email.com', '2026831594', '1970-09-11', 'taraji.h', 'CookieLyon1'),
+('Gabrielle', 'Union', 'gabrielle.union@email.com', '3054917263', '1972-10-29', 'g.union', 'BringItOn72'),
+('Lakeith', 'Stanfield', 'lakeith.stanfield@email.com', '4043175806', '1991-08-12', 'lstanfield', 'Atlanta91'),
+('Aja', 'Naomi', 'aja.naomi@email.com', '2146604825', '1984-01-17', 'ajanaomi_', 'HTGAWM84'),
+('Ryan', 'Destiny', 'ryan.destiny@email.com', '3134759018', '1995-01-08', 'ryan.d', 'GlowUp95'),
+('Lupita', 'Nyongo', 'lupita.nyongo@email.com', '2135972408', '1983-03-01', 'lupita_n', 'OscarGirl83'),
+('Daniel', 'Kaluuya', 'daniel.kaluuya@email.com', '9178463512', '1989-02-24', 'dkaluuya', 'LondonBoy89'),
+('Coco', 'Jones', 'coco.jones@email.com', '6153387204', '1998-01-04', 'coco.j', 'ICULuvMe98');
+
+insert into route (status, name)
+values
+('active', 'Atlantic Regional'),
+('active', 'Northeast Express'),
+('active', 'Capital Corridor'),
+('active', 'Great Lakes Line'),
+('active', 'Southern Crescent');
+
+insert into station (station_name, city, state)
+values
+('vab', 'virginia beach', 'virginia'),
+('orf', 'norfolk', 'virginia'),
+('ric', 'richmond', 'virginia'),
+('dc', 'washington dc', 'district of columbia'),
+('bal', 'baltimore', 'maryland'),
+('phl', 'philadelphia', 'pennsylvania'),
+('nyc', 'new york city', 'new york'),
+('bos', 'boston', 'massachusetts'),
+('det', 'detroit', 'michigan'),
+('chi', 'chicago', 'illinois'),
+('atl', 'atlanta', 'georgia'),
+('nsh', 'nashville', 'tennessee'),
+('clt', 'charlotte', 'north carolina'),
+('mia', 'miami', 'florida'),
+('la', 'los angeles', 'california'),
+('sf', 'san francisco', 'california'),
+('dal', 'dallas', 'texas'),
+('hou', 'houston', 'texas'),
+('sea', 'seattle', 'washington'),
+('nol', 'new orleans', 'louisiana');
+
+insert into vehicle (capacity, occupied_seats, available_seats, route_id, employee_id)
+values
+(160, 0, 160, 1, 5263),
+(175, 0, 175, 2, 5265),
+(150, 0, 150, 3, 5266),
+(140, 0, 140, 4, 5267),
+(130, 0, 130, 5, 5263);
+
+-- Notifications table so customers see delay messages
+CREATE TABLE IF NOT EXISTS notification (
+    notification_id SERIAL PRIMARY KEY,
+    user_id INT,
+    message TEXT,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    notification_type VARCHAR(50),
+    foreign key (user_id) references user_profile(user_id)
+);
+
+-- Refund table to track refund requests
+CREATE TABLE IF NOT EXISTS refund (
+    refund_id SERIAL PRIMARY KEY,
+    ticket_id INT UNIQUE,
+    user_id INT,
+    reason TEXT,
+    status VARCHAR(50) DEFAULT 'PENDING',
+    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP,
+    foreign key (ticket_id) references ticket(ticket_id),
+    foreign key (user_id) references user_profile(user_id)
+);
+
+-- Add role column to user_profile so we know if they are customer/operator/admin
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'customer';
+
+-- Add employee_id link to user_profile for operators and admins
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS employee_id INT;
+
+-- Update existing users to have customer role
+UPDATE user_profile SET role = 'customer' WHERE role IS NULL;
+
+INSERT INTO notification (user_id, message, is_read, notification_type)
+SELECT user_id, 'Welcome to TranzitSystem! Your account is ready.', false, 'INFO'
+FROM user_profile WHERE role = 'customer' LIMIT 5;
+
+INSERT INTO notification (user_id, message, is_read, notification_type)
+SELECT user_id, 'Train on Atlantic Regional route is delayed by 15 minutes.', false, 'DELAY'
+FROM user_profile WHERE role = 'customer' LIMIT 3;
+
+INSERT INTO refund (ticket_id, user_id, reason, status)
+SELECT t.ticket_id, t.user_id, 'Change of plans', 'PENDING'
+FROM ticket t LIMIT 2;
+
+select * from employee;
+select * from operator;
+select * from admin;
+select * from user_profile;
+select * from route;
+select * from station;
+select * from vehicle;
+select * from notification;
+select * from refund;
