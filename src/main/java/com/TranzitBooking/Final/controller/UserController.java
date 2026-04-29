@@ -14,14 +14,10 @@ public class UserController {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
-    @PostMapping("/create")
-    public UserProfile createUser(@RequestBody UserProfile user) {
-        return userProfileRepository.save(user);
-    }
-
     @PostMapping("/validate")
     public String validateUser(@RequestBody UserProfile loginRequest,
                                @RequestParam String inputPassword) {
+
         Optional<UserProfile> found = userProfileRepository
             .findByEmail(loginRequest.getEmail());
 
@@ -36,6 +32,11 @@ public class UserController {
         } else {
             return "Invalid password";
         }
+    }
+
+    @PostMapping("/create")
+    public UserProfile createUser(@RequestBody UserProfile user) {
+        return userProfileRepository.save(user);
     }
 
     @GetMapping("/email/{email}")

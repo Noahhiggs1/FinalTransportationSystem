@@ -7,7 +7,7 @@ import java.util.List;
 
 @Repository
 public interface DelayEventRepository extends MongoRepository<DelayEvent, String> {
+    List<DelayEvent> findByEmployeeIdOrderByCreatedAtDesc(Long employeeId);
     List<DelayEvent> findByStatus(String status);
-    List<DelayEvent> findBySeverity(String severity);
-    List<DelayEvent> findByAffectedLinesContaining(String line);
+    List<DelayEvent> findByVehicleId(Long vehicleId);
 }

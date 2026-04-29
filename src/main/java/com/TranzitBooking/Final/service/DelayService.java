@@ -13,42 +13,50 @@ public class DelayService {
     @Autowired
     private DelayEventRepository delayEventRepository;
 
-    public DelayEvent createDelayEvent(String eventId, String type, String severity,
-                                       List<String> affectedLines, int estimatedDelayMinutes,
-                                       String incidentNarrative) {
+    public DelayEvent createDelayEvent(Long employeeId,
+                                        Long vehicleId,
+                                        Long routeId,
+                                        String message,
+                                        String severity,
+                                        Integer estimatedDelayMinutes) {
         DelayEvent event = new DelayEvent();
-        event.setEventId(eventId);
-        event.setType(type);
+        event.setEmployeeId(employeeId);
+        event.setVehicleId(vehicleId);
+        event.setRouteId(routeId);
+        event.setMessage(message);
         event.setSeverity(severity);
-        event.setAffectedLines(affectedLines);
         event.setEstimatedDelayMinutes(estimatedDelayMinutes);
-        event.setIncidentNarrative(incidentNarrative);
-        event.setStatus("Active");
-        event.setTimestamp(new Date());
-        return delayEventRepository.save(event);
-    }
-
-    public List<DelayEvent> getActiveDelays() {
-        return delayEventRepository.findByStatus("Active");
-    }
-
-    public List<DelayEvent> getDelaysByLine(String line) {
-        return delayEventRepository.findByAffectedLinesContaining(line);
-    }
-
-    public DelayEvent resolveDelay(String id) {
-        DelayEvent event = delayEventRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Delay event not found"));
-        event.setStatus("Resolved");
+        event.setStatus("ACTIVE");
+        event.setCreatedAt(new Date());
         return delayEventRepository.save(event);
     }
 
     public String assessDelay(DelayEvent event) {
-        if (event.getEstimatedDelayMinutes() > 30) {
-            return "SEVERE delay - " + event.getSeverity();
-        } else if (event.getEstimatedDelayMinutes() > 10) {
-            return "MODERATE delay - " + event.getSeverity();
+        if (event == null) return "No delay event provided.";
+        if ("HIGH".equals(event.getSeverity())) {
+            return "High severity delay. Immediate action required.";
+        } else if ("MEDIUM".equals(event.getSeverity())) {
+            return "Medium severity delay. Monitor situation.";
         }
-        return "MINOR delay - " + event.getSeverity();
+        return "Low severity delay. Informational only.";
+    }
+
+    public List<DelayEvent> getActiveDelays() {
+        return delayEventRepository.findByStatus("ACTIVE");
+    }
+
+    public List<DelayEvent> getDelaysByEmployee(Long employeeId) {
+        return delayEventRepository
+            .findByEmployeeIdOrderByCreatedAtDesc(employeeId);
+    }
+
+    public DelayEvent resolveDelay(String id) {
+        return delayEventRepository.findById(id)
+            .map(d -> {
+                d.setStatus("RESOLVED");
+                d.setResolvedAt(new Date());
+                return delayEventRepository.save(d);
+            })
+            .orElseThrow(() -> new RuntimeException("Delay not found: " + id));
     }
 }

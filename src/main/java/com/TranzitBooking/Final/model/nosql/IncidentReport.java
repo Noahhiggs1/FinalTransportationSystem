@@ -4,20 +4,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 
-@Document(collection = "delay_events")
-public class DelayEvent {
+@Document(collection = "incident_reports")
+public class IncidentReport {
 
     @Id
     private String id;
 
     private Long employeeId;
     private Long vehicleId;
-    private Long routeId;
-    private String message;
-    private Integer estimatedDelayMinutes;
+    private String title;
+    private String description;
     private String severity;
     private String status;
-    private Date createdAt;
+    private Date reportedAt;
     private Date resolvedAt;
 
     public String getId() { return id; }
@@ -26,18 +25,16 @@ public class DelayEvent {
     public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
     public Long getVehicleId() { return vehicleId; }
     public void setVehicleId(Long vehicleId) { this.vehicleId = vehicleId; }
-    public Long getRouteId() { return routeId; }
-    public void setRouteId(Long routeId) { this.routeId = routeId; }
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
-    public Integer getEstimatedDelayMinutes() { return estimatedDelayMinutes; }
-    public void setEstimatedDelayMinutes(Integer v) { this.estimatedDelayMinutes = v; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
     public String getSeverity() { return severity; }
     public void setSeverity(String severity) { this.severity = severity; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-    public Date getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+    public Date getReportedAt() { return reportedAt; }
+    public void setReportedAt(Date reportedAt) { this.reportedAt = reportedAt; }
     public Date getResolvedAt() { return resolvedAt; }
     public void setResolvedAt(Date resolvedAt) { this.resolvedAt = resolvedAt; }
 }

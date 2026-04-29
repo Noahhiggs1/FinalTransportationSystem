@@ -323,7 +323,7 @@ export default function LoginPage() {
               {activeTab === 'customer' && (
                 <Link to="/booking" style={{ textDecoration: 'none' }}>
                   <button style={ghostBtn}>
-                    Continue as Guest
+
                   </button>
                 </Link>
               )}

@@ -3,76 +3,47 @@ import { useNavigate } from 'react-router-dom';
 
 export default function CustomerDashboard() {
   const navigate = useNavigate();
-
-  // Get user info from sessionStorage - this was saved when they logged in
   const userId = sessionStorage.getItem('userId');
   const userName = sessionStorage.getItem('userName');
   const userEmail = sessionStorage.getItem('userEmail');
   const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
 
-  // If not logged in redirect to login page
   useEffect(() => {
     if (!isLoggedIn) navigate('/login');
   }, [isLoggedIn, navigate]);
 
-  // Tab state - which section is the user looking at
   const [activeTab, setActiveTab] = useState('overview');
-
-  // Data from backend
   const [tickets, setTickets] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [refunds, setRefunds] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Refund form state
   const [refundTicketId, setRefundTicketId] = useState('');
   const [refundReason, setRefundReason] = useState('');
-  const [refundMessage, setRefundMessage] = useState('');
+  const [refundMsg, setRefundMsg] = useState('');
 
-  // Load all data when the page opens
   useEffect(() => {
     if (!userId) return;
-
-    // Load tickets, notifications, refunds and routes all at once
-    // Promise.all runs all fetches at the same time instead of one by one
     Promise.all([
-      fetch(`http://localhost:8081/api/tickets/user/${userId}`).then(r => r.json()),
-      fetch(`http://localhost:8081/api/notifications/user/${userId}`).then(r => r.json()),
-      fetch(`http://localhost:8081/api/refunds/user/${userId}`).then(r => r.json()),
-      fetch('http://localhost:8081/api/routes').then(r => r.json()),
-    ])
-      .then(([ticketsData, notifData, refundData, routesData]) => {
-        setTickets(Array.isArray(ticketsData) ? ticketsData : []);
-        setNotifications(Array.isArray(notifData) ? notifData : []);
-        setRefunds(Array.isArray(refundData) ? refundData : []);
-        setRoutes(Array.isArray(routesData) ? routesData : []);
-      })
-      .catch(err => console.error('Error loading dashboard data:', err))
-      .finally(() => setLoading(false));
+      fetch(`http://localhost:8081/api/tickets/user/${userId}`).then(r => r.json()).catch(() => []),
+      fetch(`http://localhost:8081/api/notifications/user/${userId}`).then(r => r.json()).catch(() => []),
+      fetch(`http://localhost:8081/api/refunds/user/${userId}`).then(r => r.json()).catch(() => []),
+      fetch('http://localhost:8081/api/routes').then(r => r.json()).catch(() => []),
+    ]).then(([t, n, r, ro]) => {
+      setTickets(Array.isArray(t) ? t : []);
+      setNotifications(Array.isArray(n) ? n : []);
+      setRefunds(Array.isArray(r) ? r : []);
+      setRoutes(Array.isArray(ro) ? ro : []);
+    }).finally(() => setLoading(false));
   }, [userId]);
 
-  // Count unread notifications for the badge
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unread = notifications.filter(n => !n.read && !n.isRead).length;
 
-  // Mark a notification as read when clicked
-  const markAsRead = (notifId) => {
-    fetch(`http://localhost:8081/api/notifications/${notifId}/read`, {
-      method: 'PUT'
-    }).then(() => {
-      setNotifications(prev =>
-        prev.map(n => n.notificationId === notifId ? { ...n, read: true } : n)
-      );
-    });
-  };
-
-  // Submit a refund request
-  const handleRefundSubmit = () => {
+  const handleRefund = () => {
     if (!refundTicketId || !refundReason) {
-      setRefundMessage('Please enter a ticket ID and reason.');
+      setRefundMsg('Please enter a ticket ID and reason.');
       return;
     }
-
     fetch('http://localhost:8081/api/refunds/request', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -83,29 +54,23 @@ export default function CustomerDashboard() {
         status: 'PENDING'
       })
     })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed');
-        return res.json();
-      })
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(newRefund => {
         setRefunds(prev => [newRefund, ...prev]);
-        setRefundMessage('✅ Refund request submitted successfully.');
+        setRefundMsg('✅ Refund request submitted.');
         setRefundTicketId('');
         setRefundReason('');
       })
-      .catch(() => setRefundMessage('❌ Could not submit refund. Check your ticket ID.'));
+      .catch(() => setRefundMsg('❌ Could not submit. Check your ticket ID.'));
   };
 
-  const tabs = [
-    { id: 'overview', label: 'Overview', icon: '🏠' },
-    { id: 'tickets', label: 'My Tickets', icon: '🎫' },
+  const firstName = userName?.split(' ')[0] || 'Traveler';
+
+  const navItems = [
+    { id: 'overview', label: 'My Trips', icon: '🎫' },
+    { id: 'tickets', label: 'Ticket Wallet', icon: '👜' },
     { id: 'refunds', label: 'Refunds', icon: '💳' },
-    {
-      id: 'notifications',
-      label: 'Notifications',
-      icon: '🔔',
-      badge: unreadCount
-    },
+    { id: 'notifications', label: 'Notifications', icon: '🔔', badge: unread },
   ];
 
   if (loading) {
@@ -114,25 +79,29 @@ export default function CustomerDashboard() {
         minHeight: '60vh',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexDirection: 'column',
+        gap: '1rem',
+        color: '#888'
       }}>
-        <div style={{ textAlign: 'center', color: '#666' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
-          <p>Loading your dashboard...</p>
-        </div>
+        <div style={{ fontSize: '2.5rem' }}>🚆</div>
+        <p style={{ margin: 0 }}>Loading your account...</p>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{
+      maxWidth: '1100px',
+      margin: '0 auto',
+      fontFamily: 'Arial, sans-serif'
+    }}>
 
-      {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #1a1a2e, #16213e)',
+        background: 'linear-gradient(135deg, #0d1b3e, #1a3a6e)',
         borderRadius: '16px',
-        padding: '2rem',
-        marginBottom: '1.5rem',
+        padding: '2rem 2.5rem',
+        marginBottom: '2rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -140,438 +109,504 @@ export default function CustomerDashboard() {
         gap: '1rem'
       }}>
         <div>
-          <h2 style={{ color: '#fff', margin: 0, fontSize: '1.5rem' }}>
-            Welcome back, {userName?.split(' ')[0]} 👋
+          <p style={{
+            color: '#90b4e8',
+            fontSize: '0.8rem',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            margin: '0 0 4px'
+          }}>
+            Welcome back
+          </p>
+          <h2 style={{ color: '#fff', margin: '0 0 4px', fontSize: '1.6rem' }}>
+            {firstName}
           </h2>
-          <p style={{ color: '#7a8fb5', margin: '0.25rem 0 0', fontSize: '0.9rem' }}>
+          <p style={{ color: '#90b4e8', margin: 0, fontSize: '0.85rem' }}>
             {userEmail}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <button
             onClick={() => navigate('/booking')}
             style={{
-              padding: '0.6rem 1.2rem',
-              background: 'linear-gradient(135deg, #667eea, #764ba2)',
-              color: '#fff',
+              padding: '0.65rem 1.4rem',
+              background: '#fff',
+              color: '#0d1b3e',
               border: 'none',
               borderRadius: '8px',
-              cursor: 'pointer',
               fontWeight: 'bold',
+              cursor: 'pointer',
               fontSize: '0.9rem'
             }}
           >
-            🚆 Book a Train
+            🚆 Book a Trip
           </button>
           <button
-            onClick={() => {
-              sessionStorage.clear();
-              navigate('/login');
-            }}
+            onClick={() => { sessionStorage.clear(); navigate('/login'); }}
             style={{
-              padding: '0.6rem 1.2rem',
+              padding: '0.65rem 1.4rem',
               background: 'transparent',
-              color: '#7a8fb5',
-              border: '1px solid #7a8fb5',
+              color: '#90b4e8',
+              border: '1px solid #90b4e8',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '0.9rem'
             }}
           >
-            Logout
+            Sign Out
           </button>
         </div>
       </div>
 
-      {/* Quick stats row */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: '1rem',
-        marginBottom: '1.5rem'
+        marginBottom: '2rem'
       }}>
         {[
-          { label: 'Total Tickets', value: tickets.length, icon: '🎫', color: '#667eea' },
-          { label: 'Active Tickets', value: tickets.filter(t => t.bookingStatus === 'CONFIRMED').length, icon: '✅', color: '#4ade80' },
-          { label: 'Pending Refunds', value: refunds.filter(r => r.status === 'PENDING').length, icon: '💳', color: '#f59e0b' },
-          { label: 'Notifications', value: unreadCount, icon: '🔔', color: '#f87171' },
+          { label: 'Total Trips', value: tickets.length, icon: '🎫', color: '#1a3a6e', bg: '#eef2ff' },
+          { label: 'Active Tickets', value: tickets.filter(t => t.bookingStatus === 'CONFIRMED').length, icon: '✅', color: '#2e7d32', bg: '#e8f5e9' },
+          { label: 'Pending Refunds', value: refunds.filter(r => r.status === 'PENDING').length, icon: '⏳', color: '#b45309', bg: '#fffbeb' },
+          { label: 'Notifications', value: unread, icon: '🔔', color: '#c62828', bg: '#ffebee' },
         ].map(stat => (
           <div key={stat.label} style={{
-            background: '#fff',
+            background: stat.bg,
             borderRadius: '12px',
             padding: '1.25rem',
-            border: '1px solid #eee',
-            textAlign: 'center'
+            border: `1px solid ${stat.bg}`
           }}>
-            <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{stat.icon}</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: stat.color }}>
+            <div style={{ fontSize: '1.4rem', marginBottom: '0.5rem' }}>
+              {stat.icon}
+            </div>
+            <div style={{
+              fontSize: '1.8rem',
+              fontWeight: '700',
+              color: stat.color,
+              lineHeight: 1
+            }}>
               {stat.value}
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.25rem' }}>
+            <div style={{
+              fontSize: '0.78rem',
+              color: '#666',
+              marginTop: '4px',
+              fontWeight: '500'
+            }}>
               {stat.label}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Tab navigation */}
-      <div style={{
-        display: 'flex',
-        gap: '0.5rem',
-        marginBottom: '1.5rem',
-        background: '#f5f5f5',
-        padding: '4px',
-        borderRadius: '12px'
-      }}>
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              flex: 1,
-              padding: '0.6rem 0.5rem',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-              fontWeight: activeTab === tab.id ? 'bold' : 'normal',
-              background: activeTab === tab.id ? '#fff' : 'transparent',
-              color: activeTab === tab.id ? '#1a1a2e' : '#888',
-              boxShadow: activeTab === tab.id ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
-              transition: 'all 0.2s',
-              position: 'relative'
-            }}
-          >
-            {tab.icon} {tab.label}
-            {tab.badge > 0 && (
-              <span style={{
-                marginLeft: '4px',
-                background: '#f87171',
-                color: '#fff',
-                borderRadius: '10px',
-                padding: '1px 6px',
-                fontSize: '0.7rem',
-                fontWeight: 'bold'
-              }}>
-                {tab.badge}
+      <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '1.5rem' }}>
+
+        <div style={{
+          background: '#fff',
+          borderRadius: '14px',
+          padding: '1rem',
+          border: '1px solid #e8eaf0',
+          height: 'fit-content',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+        }}>
+          <p style={{
+            fontSize: '0.72rem',
+            fontWeight: '700',
+            color: '#aaa',
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+            padding: '0.5rem 0.75rem',
+            margin: '0 0 0.5rem'
+          }}>
+            My Account
+          </p>
+          {navItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                textAlign: 'left',
+                fontSize: '0.9rem',
+                fontWeight: activeTab === item.id ? '700' : '400',
+                background: activeTab === item.id ? '#eef2ff' : 'transparent',
+                color: activeTab === item.id ? '#1a3a6e' : '#555',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '2px',
+                transition: 'all 0.15s'
+              }}
+            >
+              <span>
+                <span style={{ marginRight: '8px' }}>{item.icon}</span>
+                {item.label}
               </span>
-            )}
-          </button>
-        ))}
-      </div>
+              {item.badge > 0 && (
+                <span style={{
+                  background: '#c62828',
+                  color: '#fff',
+                  borderRadius: '10px',
+                  padding: '1px 7px',
+                  fontSize: '0.72rem',
+                  fontWeight: 'bold'
+                }}>
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
 
-      {/* Tab content */}
-      <div style={{
-        background: '#fff',
-        borderRadius: '16px',
-        padding: '1.5rem',
-        border: '1px solid #eee',
-        minHeight: '300px'
-      }}>
+        <div style={{
+          background: '#fff',
+          borderRadius: '14px',
+          padding: '1.75rem',
+          border: '1px solid #e8eaf0',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+          minHeight: '400px'
+        }}>
 
-        {/* OVERVIEW TAB */}
-        {activeTab === 'overview' && (
-          <div>
-            <h3 style={{ marginTop: 0 }}>Train Status</h3>
-            <p style={{ color: '#666', fontSize: '0.9rem' }}>
-              Current status of all active routes
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {activeTab === 'overview' && (
+            <div>
+              <h3 style={{ margin: '0 0 1.5rem', color: '#1a1a2e', fontSize: '1.1rem' }}>
+                Route Status
+              </h3>
               {routes.length === 0 ? (
                 <p style={{ color: '#aaa' }}>No routes available.</p>
               ) : (
-                routes.map(route => (
-                  <div key={route.routeId} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '1rem 1.25rem',
-                    background: '#f9f9f9',
-                    borderRadius: '10px',
-                    border: '1px solid #eee'
-                  }}>
-                    <div>
-                      <div style={{ fontWeight: 'bold' }}>{route.name}</div>
-                      <div style={{ color: '#888', fontSize: '0.85rem' }}>
-                        Route #{route.routeId}
-                      </div>
-                    </div>
-                    <span style={{
-                      padding: '4px 12px',
-                      borderRadius: '20px',
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold',
-                      background: route.status === 'active' ? '#e8f5e9' : '#fff3e0',
-                      color: route.status === 'active' ? '#2e7d32' : '#e65100'
-                    }}>
-                      {route.status === 'active' ? '✅ On Time' : '⚠️ ' + route.status}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* TICKETS TAB */}
-        {activeTab === 'tickets' && (
-          <div>
-            <h3 style={{ marginTop: 0 }}>My Tickets</h3>
-            {tickets.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#aaa' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎫</div>
-                <p>No tickets yet.</p>
-                <button
-                  onClick={() => navigate('/booking')}
-                  style={{
-                    padding: '0.6rem 1.4rem',
-                    background: '#1a1a2e',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Book Your First Train
-                </button>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {tickets.map(ticket => (
-                  <div key={ticket.ticketId} style={{
-                    padding: '1.25rem',
-                    border: '1px solid #eee',
-                    borderRadius: '12px',
-                    background: '#f9f9f9'
-                  }}>
-                    <div style={{
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {routes.map(route => (
+                    <div key={route.routeId} style={{
                       display: 'flex',
                       justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: '0.5rem'
+                      alignItems: 'center',
+                      padding: '1rem 1.25rem',
+                      background: '#f8f9ff',
+                      borderRadius: '10px',
+                      border: '1px solid #e8eaf0'
                     }}>
                       <div>
-                        <div style={{ fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                          Ticket #{ticket.ticketId}
+                        <div style={{
+                          fontWeight: '600',
+                          color: '#1a1a2e',
+                          fontSize: '0.95rem'
+                        }}>
+                          {route.name}
                         </div>
-                        <div style={{ color: '#666', fontSize: '0.9rem' }}>
-                          Seat: {ticket.seatNumber || 'N/A'}
-                        </div>
-                        <div style={{ color: '#666', fontSize: '0.9rem' }}>
-                          Departure: {ticket.departureTime
-                            ? new Date(ticket.departureTime).toLocaleString()
-                            : 'TBD'}
+                        <div style={{ color: '#888', fontSize: '0.8rem', marginTop: '2px' }}>
+                          Route #{route.routeId}
                         </div>
                       </div>
                       <span style={{
                         padding: '4px 12px',
                         borderRadius: '20px',
-                        fontSize: '0.8rem',
-                        fontWeight: 'bold',
-                        alignSelf: 'flex-start',
-                        background: ticket.bookingStatus === 'CONFIRMED'
-                          ? '#e8f5e9' : '#fff3e0',
-                        color: ticket.bookingStatus === 'CONFIRMED'
-                          ? '#2e7d32' : '#e65100'
+                        fontSize: '0.78rem',
+                        fontWeight: '600',
+                        background: route.status === 'active' ? '#e8f5e9' : '#fff3e0',
+                        color: route.status === 'active' ? '#2e7d32' : '#e65100'
                       }}>
-                        {ticket.bookingStatus || 'PENDING'}
+                        {route.status === 'active' ? '● On Time' : '⚠ ' + route.status}
                       </span>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* REFUNDS TAB */}
-        {activeTab === 'refunds' && (
-          <div>
-            <h3 style={{ marginTop: 0 }}>Request a Refund</h3>
-
-            {/* Refund request form */}
-            <div style={{
-              background: '#f9f9f9',
-              borderRadius: '12px',
-              padding: '1.5rem',
-              marginBottom: '1.5rem',
-              border: '1px solid #eee'
-            }}>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={formLabel}>Ticket ID</label>
-                <input
-                  placeholder="Enter your ticket number"
-                  value={refundTicketId}
-                  onChange={e => setRefundTicketId(e.target.value)}
-                  style={formInput}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={formLabel}>Reason for Refund</label>
-                <textarea
-                  placeholder="Please explain why you are requesting a refund..."
-                  value={refundReason}
-                  onChange={e => setRefundReason(e.target.value)}
-                  rows={3}
-                  style={{ ...formInput, resize: 'vertical' }}
-                />
-              </div>
-              {refundMessage && (
-                <p style={{
-                  color: refundMessage.includes('✅') ? '#2e7d32' : '#c62828',
-                  fontSize: '0.9rem'
-                }}>
-                  {refundMessage}
-                </p>
+                  ))}
+                </div>
               )}
-              <button
-                onClick={handleRefundSubmit}
-                style={{
+            </div>
+          )}
+
+          {activeTab === 'tickets' && (
+            <div>
+              <h3 style={{ margin: '0 0 1.5rem', color: '#1a1a2e', fontSize: '1.1rem' }}>
+                Ticket Wallet
+              </h3>
+              {tickets.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#aaa' }}>
+                  <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎫</div>
+                  <p style={{ fontWeight: '600', color: '#555', marginBottom: '0.5rem' }}>
+                    No tickets yet
+                  </p>
+                  <p style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                    Book your first trip to see your tickets here
+                  </p>
+                  <button onClick={() => navigate('/booking')} style={{
+                    padding: '0.65rem 1.5rem',
+                    background: '#0d1b3e',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}>
+                    Book a Trip
+                  </button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {tickets.map(ticket => (
+                    <div key={ticket.ticketId} style={{
+                      border: '1px solid #e8eaf0',
+                      borderRadius: '12px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{
+                        background: ticket.bookingStatus === 'CONFIRMED'
+                          ? '#0d1b3e' : '#888',
+                        padding: '0.75rem 1.25rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <span style={{
+                          color: '#fff',
+                          fontWeight: '700',
+                          fontSize: '0.85rem',
+                          letterSpacing: '1px'
+                        }}>
+                          TICKET #{ticket.ticketId}
+                        </span>
+                        <span style={{
+                          background: ticket.bookingStatus === 'CONFIRMED'
+                            ? '#4ade80' : '#ffb74d',
+                          color: ticket.bookingStatus === 'CONFIRMED'
+                            ? '#14532d' : '#7c3a00',
+                          padding: '2px 10px',
+                          borderRadius: '12px',
+                          fontSize: '0.72rem',
+                          fontWeight: '700'
+                        }}>
+                          {ticket.bookingStatus}
+                        </span>
+                      </div>
+
+                      <div style={{
+                        padding: '1.25rem',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: '1rem'
+                      }}>
+                        <div>
+                          <div style={{ fontSize: '0.72rem', color: '#aaa', marginBottom: '4px', fontWeight: '600', letterSpacing: '1px' }}>
+                            SEAT
+                          </div>
+                          <div style={{ fontWeight: '700', fontSize: '1.1rem', color: '#1a1a2e' }}>
+                            {ticket.seatNumber || 'N/A'}
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.72rem', color: '#aaa', marginBottom: '4px', fontWeight: '600', letterSpacing: '1px' }}>
+                            DEPARTURE
+                          </div>
+                          <div style={{ fontWeight: '600', fontSize: '0.9rem', color: '#1a1a2e' }}>
+                            {ticket.departureTime
+                              ? new Date(ticket.departureTime).toLocaleDateString()
+                              : 'TBD'}
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '0.72rem', color: '#aaa', marginBottom: '4px', fontWeight: '600', letterSpacing: '1px' }}>
+                            BOOKED ON
+                          </div>
+                          <div style={{ fontWeight: '600', fontSize: '0.9rem', color: '#1a1a2e' }}>
+                            {ticket.bookingTimestamp
+                              ? new Date(ticket.bookingTimestamp).toLocaleDateString()
+                              : 'N/A'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'refunds' && (
+            <div>
+              <h3 style={{ margin: '0 0 1.5rem', color: '#1a1a2e', fontSize: '1.1rem' }}>
+                Request a Refund
+              </h3>
+
+              <div style={{
+                background: '#f8f9ff',
+                borderRadius: '12px',
+                padding: '1.5rem',
+                marginBottom: '2rem',
+                border: '1px solid #e8eaf0'
+              }}>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={formLabel}>Ticket ID</label>
+                  <input
+                    placeholder="Enter your ticket number e.g. 42"
+                    value={refundTicketId}
+                    onChange={e => setRefundTicketId(e.target.value)}
+                    style={formInput}
+                  />
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={formLabel}>Reason for Refund</label>
+                  <textarea
+                    placeholder="Please describe why you are requesting a refund..."
+                    value={refundReason}
+                    onChange={e => setRefundReason(e.target.value)}
+                    rows={3}
+                    style={{ ...formInput, resize: 'vertical' }}
+                  />
+                </div>
+                {refundMsg && (
+                  <p style={{
+                    color: refundMsg.includes('✅') ? '#2e7d32' : '#c62828',
+                    fontSize: '0.875rem',
+                    marginBottom: '1rem'
+                  }}>
+                    {refundMsg}
+                  </p>
+                )}
+                <button onClick={handleRefund} style={{
                   padding: '0.7rem 1.5rem',
-                  background: '#1a1a2e',
+                  background: '#0d1b3e',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '8px',
                   cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                Submit Refund Request
-              </button>
-            </div>
-
-            {/* Past refund requests */}
-            <h4 style={{ marginBottom: '1rem' }}>Past Refund Requests</h4>
-            {refunds.length === 0 ? (
-              <p style={{ color: '#aaa' }}>No refund requests yet.</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {refunds.map(refund => (
-                  <div key={refund.refundId} style={{
-                    padding: '1rem 1.25rem',
-                    border: '1px solid #eee',
-                    borderRadius: '10px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    flexWrap: 'wrap',
-                    gap: '0.5rem'
-                  }}>
-                    <div>
-                      <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        Ticket #{refund.ticketId}
-                      </div>
-                      <div style={{ color: '#666', fontSize: '0.85rem' }}>
-                        {refund.reason}
-                      </div>
-                      <div style={{ color: '#999', fontSize: '0.8rem' }}>
-                        {refund.requestedAt
-                          ? new Date(refund.requestedAt).toLocaleDateString()
-                          : 'Just now'}
-                      </div>
-                    </div>
-                    <span style={{
-                      padding: '4px 12px',
-                      borderRadius: '20px',
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold',
-                      background: refund.status === 'APPROVED' ? '#e8f5e9'
-                        : refund.status === 'REJECTED' ? '#ffebee' : '#fff3e0',
-                      color: refund.status === 'APPROVED' ? '#2e7d32'
-                        : refund.status === 'REJECTED' ? '#c62828' : '#e65100'
-                    }}>
-                      {refund.status}
-                    </span>
-                  </div>
-                ))}
+                  fontWeight: 'bold',
+                  fontSize: '0.9rem'
+                }}>
+                  Submit Refund Request
+                </button>
               </div>
-            )}
-          </div>
-        )}
 
-        {/* NOTIFICATIONS TAB */}
-        {activeTab === 'notifications' && (
-          <div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '1rem'
-            }}>
-              <h3 style={{ margin: 0 }}>Notifications</h3>
-              {unreadCount > 0 && (
-                <span style={{ color: '#888', fontSize: '0.85rem' }}>
-                  {unreadCount} unread
-                </span>
+              <h4 style={{ margin: '0 0 1rem', color: '#555', fontSize: '0.95rem' }}>
+                Refund History
+              </h4>
+              {refunds.length === 0 ? (
+                <p style={{ color: '#aaa', fontSize: '0.9rem' }}>
+                  No refund requests yet.
+                </p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {refunds.map(refund => (
+                    <div key={refund.refundId} style={{
+                      padding: '1rem 1.25rem',
+                      border: '1px solid #e8eaf0',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem'
+                    }}>
+                      <div>
+                        <div style={{ fontWeight: '600', fontSize: '0.9rem', color: '#1a1a2e' }}>
+                          Ticket #{refund.ticketId}
+                        </div>
+                        <div style={{ color: '#777', fontSize: '0.82rem', marginTop: '2px' }}>
+                          {refund.reason}
+                        </div>
+                        <div style={{ color: '#aaa', fontSize: '0.78rem', marginTop: '2px' }}>
+                          {refund.requestedAt
+                            ? new Date(refund.requestedAt).toLocaleDateString()
+                            : 'Just submitted'}
+                        </div>
+                      </div>
+                      <span style={{
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.78rem',
+                        fontWeight: '700',
+                        background: refund.status === 'APPROVED' ? '#e8f5e9'
+                          : refund.status === 'REJECTED' ? '#ffebee' : '#fffbeb',
+                        color: refund.status === 'APPROVED' ? '#2e7d32'
+                          : refund.status === 'REJECTED' ? '#c62828' : '#b45309'
+                      }}>
+                        {refund.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
+          )}
 
-            {notifications.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: '#aaa' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔔</div>
-                <p>No notifications yet.</p>
+          {activeTab === 'notifications' && (
+            <div>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1.5rem'
+              }}>
+                <h3 style={{ margin: 0, color: '#1a1a2e', fontSize: '1.1rem' }}>
+                  Notifications
+                </h3>
+                {unread > 0 && (
+                  <span style={{ color: '#888', fontSize: '0.85rem' }}>
+                    {unread} unread
+                  </span>
+                )}
               </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {notifications.map(notif => (
-                  <div
-                    key={notif.notificationId}
-                    onClick={() => !notif.read && markAsRead(notif.notificationId)}
-                    style={{
-                      padding: '1rem 1.25rem',
-                      borderRadius: '10px',
-                      border: `1px solid ${notif.read ? '#eee' : '#c7d2fe'}`,
-                      background: notif.read ? '#f9f9f9' : '#eef2ff',
-                      cursor: notif.read ? 'default' : 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                  >
-                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                      <span style={{ fontSize: '1.2rem' }}>
-                        {notif.notificationType === 'DELAY' ? '⚠️'
-                          : notif.notificationType === 'INFO' ? 'ℹ️' : '🔔'}
-                      </span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{
-                          fontSize: '0.9rem',
-                          fontWeight: notif.read ? 'normal' : 'bold',
-                          color: '#1a1a2e'
-                        }}>
-                          {notif.message}
-                        </div>
-                        <div style={{ fontSize: '0.78rem', color: '#999', marginTop: '0.25rem' }}>
-                          {notif.createdAt
-                            ? new Date(notif.createdAt).toLocaleString()
-                            : 'Just now'}
-                          {!notif.read && (
-                            <span style={{
-                              marginLeft: '8px',
-                              color: '#667eea',
-                              fontSize: '0.75rem'
+              {notifications.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '3rem', color: '#aaa' }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔔</div>
+                  <p>No notifications yet.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {notifications.map(notif => {
+                    const isRead = notif.read || notif.isRead;
+                    return (
+                      <div key={notif.notificationId} style={{
+                        padding: '1rem 1.25rem',
+                        borderRadius: '10px',
+                        border: `1px solid ${isRead ? '#e8eaf0' : '#c7d2fe'}`,
+                        background: isRead ? '#fff' : '#f0f4ff',
+                        cursor: isRead ? 'default' : 'pointer'
+                      }}>
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                          <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>
+                            {notif.notificationType === 'DELAY' ? '⚠️'
+                              : notif.notificationType === 'BOOKING' ? '🎫' : 'ℹ️'}
+                          </span>
+                          <div style={{ flex: 1 }}>
+                            <div style={{
+                              fontSize: '0.9rem',
+                              fontWeight: isRead ? '400' : '600',
+                              color: '#1a1a2e'
                             }}>
-                              Click to mark as read
-                            </span>
+                              {notif.message}
+                            </div>
+                            <div style={{
+                              fontSize: '0.78rem',
+                              color: '#aaa',
+                              marginTop: '4px'
+                            }}>
+                              {notif.createdAt
+                                ? new Date(notif.createdAt).toLocaleString()
+                                : 'Just now'}
+                            </div>
+                          </div>
+                          {!isRead && (
+                            <div style={{
+                              width: '8px', height: '8px',
+                              borderRadius: '50%',
+                              background: '#1a3a6e',
+                              flexShrink: 0,
+                              marginTop: '5px'
+                            }} />
                           )}
                         </div>
                       </div>
-                      {!notif.read && (
-                        <span style={{
-                          width: '8px',
-                          height: '8px',
-                          borderRadius: '50%',
-                          background: '#667eea',
-                          display: 'inline-block',
-                          flexShrink: 0,
-                          marginTop: '4px'
-                        }} />
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -579,18 +614,20 @@ export default function CustomerDashboard() {
 
 const formLabel = {
   display: 'block',
-  fontSize: '0.85rem',
+  fontSize: '0.8rem',
+  fontWeight: '600',
   color: '#555',
-  marginBottom: '4px',
-  fontWeight: '500'
+  marginBottom: '6px',
+  letterSpacing: '0.5px'
 };
 
 const formInput = {
   width: '100%',
-  padding: '0.65rem 0.9rem',
+  padding: '0.7rem 0.9rem',
   borderRadius: '8px',
-  border: '1px solid #ddd',
-  fontSize: '0.95rem',
+  border: '1.5px solid #e0e0e0',
+  fontSize: '0.9rem',
   boxSizing: 'border-box',
-  outline: 'none'
+  outline: 'none',
+  color: '#1a1a2e'
 };
