@@ -1,1 +1,13 @@
-[{"_id":{"$oid":"69c43f8f588a328ccf901c13"},"station":"Central","timestamp":{"$date":"2026-03-25T20:03:27.681Z"},"level":"High"},{"_id":{"$oid":"69c44002588a328ccf901c16"},"log_id":"LOG-A1","station_name":"Central Terminal","occupancy_percentage":85,"sensor_id":"SN-402","status":"Full","timestamp":{"$date":"2026-03-25T20:05:22.115Z"}}]
+[
+  {"_id":{"$oid":"69c43f8f588a328ccf901c13"},"station":"Central","timestamp":{"$date":"2026-03-25T20:03:27.681Z"},"level":"High"},
+  {"_id":{"$oid":"69c44002588a328ccf901c16"},"log_id":"LOG-A1","station_name":"Central Terminal","occupancy_percentage":85,"sensor_id":"SN-402","status":"Full","timestamp":{"$date":"2026-03-25T20:05:22.115Z"}},
+  {"_id":{"$oid":"69c44010588a328ccf901c17"},"log_id":"LOG-A2","station_name":"North Park","occupancy_percentage":62,"sensor_id":"SN-403","status":"Moderate","timestamp":{"$date":"2026-03-26T08:15:00.000Z"}},
+  {"_id":{"$oid":"69c44020588a328ccf901c18"},"log_id":"LOG-A3","station_name":"Virginia Beach","occupancy_percentage":91,"sensor_id":"SN-101","status":"Full","timestamp":{"$date":"2026-03-26T09:00:00.000Z"}},
+  {"_id":{"$oid":"69c44030588a328ccf901c19"},"log_id":"LOG-A4","station_name":"Norfolk Station","occupancy_percentage":45,"sensor_id":"SN-202","status":"Low","timestamp":{"$date":"2026-03-26T10:30:00.000Z"}},
+  {"_id":{"$oid":"69c44040588a328ccf901c20"},"log_id":"LOG-A5","station_name":"Richmond Hub","occupancy_percentage":78,"sensor_id":"SN-303","status":"Moderate","timestamp":{"$date":"2026-03-26T11:00:00.000Z"}},
+  {"_id":{"$oid":"69c44050588a328ccf901c21"},"log_id":"LOG-A6","station_name":"Washington DC","occupancy_percentage":95,"sensor_id":"SN-404","status":"Full","timestamp":{"$date":"2026-03-26T12:00:00.000Z"}},
+  {"_id":{"$oid":"69c44060588a328ccf901c22"},"log_id":"LOG-A7","station_name":"Baltimore","occupancy_percentage":55,"sensor_id":"SN-505","status":"Moderate","timestamp":{"$date":"2026-03-26T13:00:00.000Z"}},
+  {"_id":{"$oid":"69c44070588a328ccf901c23"},"log_id":"LOG-A8","station_name":"Philadelphia","occupancy_percentage":80,"sensor_id":"SN-606","status":"Full","timestamp":{"$date":"2026-03-26T14:00:00.000Z"}},
+  {"_id":{"$oid":"69c44080588a328ccf901c24"},"log_id":"LOG-A9","station_name":"New York City","occupancy_percentage":98,"sensor_id":"SN-707","status":"Full","timestamp":{"$date":"2026-03-26T15:00:00.000Z"}},
+  {"_id":{"$oid":"69c44090588a328ccf901c25"},"log_id":"LOG-B1","station_name":"Boston","occupancy_percentage":70,"sensor_id":"SN-808","status":"Moderate","timestamp":{"$date":"2026-03-26T16:00:00.000Z"}}
+]

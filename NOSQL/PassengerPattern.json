@@ -1,1 +1,10 @@
-[{"_id":{"$oid":"69c43fac588a328ccf901c14"},"route_id":"Line-A-Red","station_origin":"Central Station","station_destination":"North Park","peak_hour":"08:00-09:00","average_volume":450,"last_updated":{"$date":"2026-03-25T20:03:56.734Z"}}]
+[
+  {"_id":{"$oid":"69c43fac588a328ccf901c14"},"route_id":"Line-A-Red","station_origin":"Central Station","station_destination":"North Park","peak_hour":"08:00-09:00","average_volume":450,"last_updated":{"$date":"2026-03-25T20:03:56.734Z"}},
+  {"_id":{"$oid":"69c44200588a328ccf901c32"},"route_id":"Atlantic Regional","station_origin":"Virginia Beach","station_destination":"New York City","peak_hour":"07:00-09:00","average_volume":520,"last_updated":{"$date":"2026-03-26T08:00:00.000Z"}},
+  {"_id":{"$oid":"69c44210588a328ccf901c33"},"route_id":"Northeast Express","station_origin":"Washington DC","station_destination":"Boston","peak_hour":"06:00-08:00","average_volume":680,"last_updated":{"$date":"2026-03-26T09:00:00.000Z"}},
+  {"_id":{"$oid":"69c44220588a328ccf901c34"},"route_id":"Capital Corridor","station_origin":"Richmond","station_destination":"Washington DC","peak_hour":"08:00-10:00","average_volume":390,"last_updated":{"$date":"2026-03-26T10:00:00.000Z"}},
+  {"_id":{"$oid":"69c44230588a328ccf901c35"},"route_id":"Great Lakes Line","station_origin":"Chicago","station_destination":"Detroit","peak_hour":"09:00-11:00","average_volume":410,"last_updated":{"$date":"2026-03-26T11:00:00.000Z"}},
+  {"_id":{"$oid":"69c44240588a328ccf901c36"},"route_id":"Southern Crescent","station_origin":"Atlanta","station_destination":"Nashville","peak_hour":"10:00-12:00","average_volume":350,"last_updated":{"$date":"2026-03-26T12:00:00.000Z"}},
+  {"_id":{"$oid":"69c44250588a328ccf901c37"},"route_id":"Atlantic Regional","station_origin":"Norfolk","station_destination":"Philadelphia","peak_hour":"17:00-19:00","average_volume":495,"last_updated":{"$date":"2026-03-26T13:00:00.000Z"}},
+  {"_id":{"$oid":"69c44260588a328ccf901c38"},"route_id":"Northeast Express","station_origin":"New York City","station_destination":"Boston","peak_hour":"16:00-18:00","average_volume":720,"last_updated":{"$date":"2026-03-26T14:00:00.000Z"}}
+]
