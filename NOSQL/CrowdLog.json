@@ -1,0 +1,1 @@
+[{"_id":{"$oid":"69c43f8f588a328ccf901c13"},"station":"Central","timestamp":{"$date":"2026-03-25T20:03:27.681Z"},"level":"High"},{"_id":{"$oid":"69c44002588a328ccf901c16"},"log_id":"LOG-A1","station_name":"Central Terminal","occupancy_percentage":85,"sensor_id":"SN-402","status":"Full","timestamp":{"$date":"2026-03-25T20:05:22.115Z"}}]
