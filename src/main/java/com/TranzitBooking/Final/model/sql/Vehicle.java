@@ -6,10 +6,10 @@ public class Vehicle {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long vehicleId;
     private int capacity;
-    private int occupiedSeats;
-    private int availableSeats;
-    private Long routeId;
-    private Long employeeId;
+    @Column(name = "occupied_seats") private int occupiedSeats;
+    @Column(name = "available_seats") private int availableSeats;
+    @Column(name = "route_id") private Long routeId;
+    @Column(name = "employee_id") private Long employeeId;
     public Long getVehicleId() { return vehicleId; }
     public void setVehicleId(Long vehicleId) { this.vehicleId = vehicleId; }
     public int getCapacity() { return capacity; }

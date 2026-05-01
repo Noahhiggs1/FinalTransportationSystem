@@ -93,7 +93,7 @@ export default function HomePage() {
 
   const handleSearch = () => {
     if (!from || !to || !date) return alert('Please fill in all fields');
-    navigate(`/bookingfrom=${from}&to=${to}&date=${date}`);
+    navigate(`/booking?from=${from}&to=${to}&date=${date}`);
   };
 
   return (
