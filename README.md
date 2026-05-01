@@ -98,8 +98,6 @@ spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name
 
 ---
 
-## ⚠️ Important Notes
-
 * Make sure your **database credentials and database name match your local setup**
 * Ensure all required tools (npm, Java, VS Code extensions) are installed before running
 * Avoid pushing directly to the main branch unless your changes are verified and merge-ready

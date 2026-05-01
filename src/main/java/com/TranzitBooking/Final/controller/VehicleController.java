@@ -19,6 +19,12 @@ public class VehicleController {
         return vehicleRepository.findAll();
     }
 
+    @GetMapping("/search")
+    public List<Vehicle> searchVehicles(@RequestParam(required = false) String departure,
+                                        @RequestParam(required = false) String destination) {
+        return vehicleRepository.findAll();
+    }
+
     @GetMapping("/route/{routeId}")
     public List<Vehicle> getVehiclesByRoute(@PathVariable Long routeId) {
         return vehicleRepository.findByRouteId(routeId);

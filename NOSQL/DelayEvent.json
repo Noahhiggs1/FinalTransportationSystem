@@ -6,4 +6,8 @@
   {"_id":{"$oid":"69c44130588a328ccf901c29"},"event_id":"DEL-996","type":"Equipment Failure","severity":"High","affected_lines":["Great Lakes Line"],"estimated_delay_minutes":60,"status":"Active","timestamp":{"$date":"2026-03-26T12:30:00.000Z"}},
   {"_id":{"$oid":"69c44140588a328ccf901c30"},"event_id":"DEL-997","type":"Passenger Incident","severity":"Medium","affected_lines":["Southern Crescent"],"estimated_delay_minutes":20,"status":"Resolved","timestamp":{"$date":"2026-03-26T14:00:00.000Z"}},
   {"_id":{"$oid":"69c44150588a328ccf901c31"},"event_id":"DEL-998","type":"Power Outage","severity":"High","affected_lines":["Northeast Express","Atlantic Regional"],"estimated_delay_minutes":45,"status":"Active","timestamp":{"$date":"2026-03-26T15:30:00.000Z"}}
+<<<<<<< HEAD
 ]
+=======
+]
+>>>>>>> c45402b468dd25778c3fcf059a64b70c19b12755

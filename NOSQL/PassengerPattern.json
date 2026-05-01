@@ -7,4 +7,8 @@
   {"_id":{"$oid":"69c44240588a328ccf901c36"},"route_id":"Southern Crescent","station_origin":"Atlanta","station_destination":"Nashville","peak_hour":"10:00-12:00","average_volume":350,"last_updated":{"$date":"2026-03-26T12:00:00.000Z"}},
   {"_id":{"$oid":"69c44250588a328ccf901c37"},"route_id":"Atlantic Regional","station_origin":"Norfolk","station_destination":"Philadelphia","peak_hour":"17:00-19:00","average_volume":495,"last_updated":{"$date":"2026-03-26T13:00:00.000Z"}},
   {"_id":{"$oid":"69c44260588a328ccf901c38"},"route_id":"Northeast Express","station_origin":"New York City","station_destination":"Boston","peak_hour":"16:00-18:00","average_volume":720,"last_updated":{"$date":"2026-03-26T14:00:00.000Z"}}
+<<<<<<< HEAD
 ]
+=======
+]
+>>>>>>> c45402b468dd25778c3fcf059a64b70c19b12755

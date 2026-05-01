@@ -1,4 +1,3 @@
---Kyla
 drop table if exists payment cascade;
 drop table if exists ticket cascade;
 drop table if exists vehicle cascade;
@@ -70,7 +69,6 @@ create table vehicle (
     foreign key (route_id) references route(route_id),
     foreign key (employee_id) references employee(employee_id)
 );
-ALTER TABLE vehicle ADD CONSTRAINT vehicle_capacity_check CHECK (capacity > 0);
 
 create table ticket (
     ticket_id serial primary key,
@@ -85,19 +83,20 @@ create table ticket (
     foreign key (user_id) references user_profile(user_id),
     foreign key (vehicle_id) references vehicle(vehicle_id)
 );
-alter table ticket
-add constraint unique_seat_trip
-unique (vehicle_id, seat_number);
 
 create table payment (
     payment_id serial primary key,
     method varchar(50),
-    amount decimal(10,2) check (amount > 0),
+    amount decimal(10,2) check (amount >= 0),
     transaction_ref varchar(100),
     status varchar(50),
     ticket_id int unique,
     foreign key (ticket_id) references ticket(ticket_id)
 );
+
+alter table ticket
+add constraint unique_seat_trip
+unique (vehicle_id, seat_number, trip_timestamp);
 
 alter table employee
 add column first_name varchar(50),
@@ -187,50 +186,51 @@ values
 (140, 0, 140, 4, 5267),
 (130, 0, 130, 5, 5263);
 
--- Notifications table so customers see delay messages
-CREATE TABLE IF NOT EXISTS notification (
-    notification_id SERIAL PRIMARY KEY,
-    user_id INT,
-    message TEXT,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    notification_type VARCHAR(50),
-    foreign key (user_id) references user_profile(user_id)
-);
+insert into routestation (route_id, station_id, stop_sequence)
+values
+(1, 1, 1),
+(1, 2, 2),
+(1, 3, 3),
+(1, 4, 4),
+(1, 5, 5),
+(1, 6, 6),
+(1, 7, 7),
+(1, 8, 8),
 
--- Refund table to track refund requests
-CREATE TABLE IF NOT EXISTS refund (
-    refund_id SERIAL PRIMARY KEY,
-    ticket_id INT UNIQUE,
-    user_id INT,
-    reason TEXT,
-    status VARCHAR(50) DEFAULT 'PENDING',
-    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    resolved_at TIMESTAMP,
-    foreign key (ticket_id) references ticket(ticket_id),
-    foreign key (user_id) references user_profile(user_id)
-);
+(2, 4, 1),
+(2, 5, 2),
+(2, 6, 3),
+(2, 7, 4),
+(2, 8, 5),
 
--- Add role column to user_profile so we know if they are customer/operator/admin
-ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'customer';
+(3, 3, 1),
+(3, 4, 2),
+(3, 5, 3),
+(3, 6, 4),
+(3, 7, 5),
 
--- Add employee_id link to user_profile for operators and admins
-ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS employee_id INT;
+(4, 4, 1),
+(4, 6, 2),
+(4, 7, 3),
+(4, 9, 4),
+(4, 10, 5),
 
--- Update existing users to have customer role
-UPDATE user_profile SET role = 'customer' WHERE role IS NULL;
+(5, 4, 1),
+(5, 13, 2),
+(5, 11, 3),
+(5, 12, 4),
+(5, 20, 5);
 
-INSERT INTO notification (user_id, message, is_read, notification_type)
-SELECT user_id, 'Welcome to TranzitSystem! Your account is ready.', false, 'INFO'
-FROM user_profile WHERE role = 'customer' LIMIT 5;
+insert into route (status, name)
+values ('active', 'Southwestern Line');
 
-INSERT INTO notification (user_id, message, is_read, notification_type)
-SELECT user_id, 'Train on Atlantic Regional route is delayed by 15 minutes.', false, 'DELAY'
-FROM user_profile WHERE role = 'customer' LIMIT 3;
-
-INSERT INTO refund (ticket_id, user_id, reason, status)
-SELECT t.ticket_id, t.user_id, 'Change of plans', 'PENDING'
-FROM ticket t LIMIT 2;
+insert into routestation (route_id, station_id, stop_sequence)
+values
+(6, 20, 1),
+(6, 18, 2),
+(6, 17, 3),
+(6, 15, 4),
+(6, 16, 5);
 
 select * from employee;
 select * from operator;
@@ -239,5 +239,105 @@ select * from user_profile;
 select * from route;
 select * from station;
 select * from vehicle;
-select * from notification;
-select * from refund;
+
+-- aniya
+
+ALTER TABLE employee ADD COLUMN IF NOT EXISTS password VARCHAR(255);
+ALTER TABLE employee ADD COLUMN IF NOT EXISTS email VARCHAR(100);
+
+UPDATE employee SET password = 'operator123', email = 'kyla.atkinson@tranzit.com' WHERE employee_id = 5263;
+UPDATE employee SET password = 'admin123', email = 'aniya.hopson@tranzit.com' WHERE employee_id = 5264;
+UPDATE employee SET password = 'operator123', email = 'ricki.davis@tranzit.com' WHERE employee_id = 5265;
+UPDATE employee SET password = 'operator123', email = 'nicolas.smith@tranzit.com' WHERE employee_id = 5266;
+UPDATE employee SET password = 'operator123', email = 'noah.hill@tranzit.com' WHERE employee_id = 5267;
+
+SELECT employee_id, first_name, last_name, email, password FROM employee;
+
+CREATE TABLE IF NOT EXISTS seat (
+    seat_id SERIAL PRIMARY KEY,
+    vehicle_id INT NOT NULL,
+    seat_number VARCHAR(10) NOT NULL,
+    is_available BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (vehicle_id) REFERENCES vehicle(vehicle_id),
+    UNIQUE (vehicle_id, seat_number)
+);
+
+INSERT INTO seat (vehicle_id, seat_number, is_available)
+SELECT 
+    v.vehicle_id,
+    row_label || '-' || col_label AS seat_num,
+    TRUE
+FROM vehicle v
+CROSS JOIN (
+    SELECT unnest(ARRAY['A','B','C','D','E','F','G','H','I','J',
+                        'K','L','M','N','O','P','Q','R','S','T']) AS row_label
+) rows
+CROSS JOIN (
+    SELECT unnest(ARRAY['L','M','R']) AS col_label
+) cols;
+
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS employee_id INT;
+ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'customer';
+
+CREATE TABLE IF NOT EXISTS work_log (
+    log_id SERIAL PRIMARY KEY,
+    employee_id INT NOT NULL,
+    clock_in TIMESTAMP,
+    clock_out TIMESTAMP,
+    total_hours DECIMAL(5,2),
+    log_date DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
+);
+
+-- scheduling
+
+CREATE TABLE IF NOT EXISTS schedule (
+    schedule_id SERIAL PRIMARY KEY,
+    route_id INT NOT NULL,
+    station_id INT NOT NULL,
+    stop_sequence INT,
+    arrival_time TIMESTAMP,
+    departure_time TIMESTAMP,
+    FOREIGN KEY (route_id) REFERENCES route(route_id),
+    FOREIGN KEY (station_id) REFERENCES station(station_id)
+);
+insert into schedule (route_id, station_id, stop_sequence, arrival_time, departure_time)
+values
+(1, 1, 1, '2026-05-01 08:00:00', '2026-05-01 08:05:00'),
+(1, 2, 2, '2026-05-01 08:30:00', '2026-05-01 08:35:00'),
+(1, 3, 3, '2026-05-01 09:00:00', '2026-05-01 09:05:00'),
+(1, 4, 4, '2026-05-01 09:30:00', '2026-05-01 09:35:00'),
+(1, 5, 5, '2026-05-01 10:00:00', '2026-05-01 10:05:00'),
+(1, 6, 6, '2026-05-01 10:30:00', '2026-05-01 10:35:00'),
+(1, 7, 7, '2026-05-01 11:00:00', '2026-05-01 11:05:00'),
+(1, 8, 8, '2026-05-01 11:30:00', '2026-05-01 11:35:00'),
+
+(2, 4, 1, '2026-05-01 08:00:00', '2026-05-01 08:05:00'),
+(2, 5, 2, '2026-05-01 08:30:00', '2026-05-01 08:35:00'),
+(2, 6, 3, '2026-05-01 09:00:00', '2026-05-01 09:05:00'),
+(2, 7, 4, '2026-05-01 09:30:00', '2026-05-01 09:35:00'),
+(2, 8, 5, '2026-05-01 10:00:00', '2026-05-01 10:05:00'),
+
+(3, 3, 1, '2026-05-01 08:00:00', '2026-05-01 08:05:00'),
+(3, 4, 2, '2026-05-01 08:30:00', '2026-05-01 08:35:00'),
+(3, 5, 3, '2026-05-01 09:00:00', '2026-05-01 09:05:00'),
+(3, 6, 4, '2026-05-01 09:30:00', '2026-05-01 09:35:00'),
+(3, 7, 5, '2026-05-01 10:00:00', '2026-05-01 10:05:00'),
+
+(4, 4, 1, '2026-05-01 08:00:00', '2026-05-01 08:05:00'),
+(4, 6, 2, '2026-05-01 08:30:00', '2026-05-01 08:35:00'),
+(4, 7, 3, '2026-05-01 09:00:00', '2026-05-01 09:05:00'),
+(4, 9, 4, '2026-05-01 09:30:00', '2026-05-01 09:35:00'),
+(4, 10, 5, '2026-05-01 10:00:00', '2026-05-01 10:05:00'),
+
+(5, 4, 1, '2026-05-01 08:00:00', '2026-05-01 08:05:00'),
+(5, 13, 2, '2026-05-01 08:30:00', '2026-05-01 08:35:00'),
+(5, 11, 3, '2026-05-01 09:00:00', '2026-05-01 09:05:00'),
+(5, 12, 4, '2026-05-01 09:30:00', '2026-05-01 09:35:00'),
+(5, 20, 5, '2026-05-01 10:00:00', '2026-05-01 10:05:00'),
+
+(6, 20, 1, '2026-05-01 08:00:00', '2026-05-01 08:05:00'),
+(6, 18, 2, '2026-05-01 08:30:00', '2026-05-01 08:35:00'),
+(6, 17, 3, '2026-05-01 09:00:00', '2026-05-01 09:05:00'),
+(6, 15, 4, '2026-05-01 09:30:00', '2026-05-01 09:35:00'),
+(6, 16, 5, '2026-05-01 10:00:00', '2026-05-01 10:05:00');

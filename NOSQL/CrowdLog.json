@@ -10,4 +10,8 @@
   {"_id":{"$oid":"69c44070588a328ccf901c23"},"log_id":"LOG-A8","station_name":"Philadelphia","occupancy_percentage":80,"sensor_id":"SN-606","status":"Full","timestamp":{"$date":"2026-03-26T14:00:00.000Z"}},
   {"_id":{"$oid":"69c44080588a328ccf901c24"},"log_id":"LOG-A9","station_name":"New York City","occupancy_percentage":98,"sensor_id":"SN-707","status":"Full","timestamp":{"$date":"2026-03-26T15:00:00.000Z"}},
   {"_id":{"$oid":"69c44090588a328ccf901c25"},"log_id":"LOG-B1","station_name":"Boston","occupancy_percentage":70,"sensor_id":"SN-808","status":"Moderate","timestamp":{"$date":"2026-03-26T16:00:00.000Z"}}
+<<<<<<< HEAD
 ]
+=======
+]
+>>>>>>> c45402b468dd25778c3fcf059a64b70c19b12755

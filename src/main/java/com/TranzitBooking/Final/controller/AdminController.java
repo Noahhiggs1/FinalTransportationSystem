@@ -3,6 +3,7 @@ package com.TranzitBooking.Final.controller;
 
 import com.TranzitBooking.Final.model.nosql.CrowdLog;
 import com.TranzitBooking.Final.model.nosql.DelayEvent;
+import com.TranzitBooking.Final.model.nosql.IncidentReport;
 import com.TranzitBooking.Final.model.nosql.PassengerPattern;
 import com.TranzitBooking.Final.model.sql.Route;
 import com.TranzitBooking.Final.model.sql.Vehicle;
@@ -10,6 +11,7 @@ import com.TranzitBooking.Final.service.AnalyticsService;
 import com.TranzitBooking.Final.service.DelayService;
 import com.TranzitBooking.Final.service.RouteService;
 import com.TranzitBooking.Final.service.ScheduleService;
+import com.TranzitBooking.Final.repository.IncidentReportMongoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
@@ -31,6 +33,9 @@ public class AdminController {
 
     @Autowired
     private AnalyticsService analyticsService;
+
+    @Autowired
+    private IncidentReportMongoRepository incidentReportMongoRepository;
 
     // --- Existing Routes & Vehicles ---
 
@@ -76,6 +81,15 @@ public class AdminController {
     @PutMapping("/delays/resolve/{id}")
     public DelayEvent resolveDelay(@PathVariable String id) {
         return delayService.resolveDelay(id);
+    }
+
+    @PutMapping("/incidents/resolve/{id}")
+    public IncidentReport resolveIncident(@PathVariable String id) {
+        return incidentReportMongoRepository.findById(id).map(inc -> {
+            inc.setStatus("RESOLVED");
+            inc.setResolvedAt(new java.util.Date());
+            return incidentReportMongoRepository.save(inc);
+        }).orElseThrow(() -> new RuntimeException("Incident not found: " + id));
     }
 
     // --- Crowd Density / Check-in Logs ---
