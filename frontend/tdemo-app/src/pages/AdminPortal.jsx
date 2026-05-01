@@ -470,7 +470,7 @@ function Loader() {
 function Err({ msg }) {
   return (
     <div style={{ padding: 20, background: "#1c0a0a", border: "1px solid #7f1d1d", borderRadius: 10, color: "#f87171", fontSize: 13 }}>
-      Failed to load: {msg}. Make sure the Spring Boot server is running on port 8080.
+      Failed to load: {msg}. Make sure the Spring Boot server is running on port 8081.
     </div>
   );
 }
@@ -522,7 +522,7 @@ export default function AdminPortal() {
           ))}
         </nav>
         <div style={{ padding: "16px 20px", borderTop: "1px solid #1f2937", fontSize: 11, color: "#374151" }}>
-          Connected to :8080
+          Connected to :8081
         </div>
       </div>
 

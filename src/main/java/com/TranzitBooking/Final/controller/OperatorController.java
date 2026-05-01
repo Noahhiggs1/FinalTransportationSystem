@@ -31,7 +31,9 @@ public class OperatorController {
     }
     @GetMapping("/incidents/{employeeId}")
     public List<IncidentReport> getIncidents(@PathVariable Long employeeId) {
-        return incidentReportMongoRepository.findByEmployeeIdOrderByReportedAtDesc(employeeId);
+        List<IncidentReport> result = incidentReportMongoRepository.findByEmployeeIdOrderByReportedAtDesc(employeeId);
+        if (result.isEmpty()) return incidentReportMongoRepository.findAll();
+        return result;
     }
     @PostMapping("/incidents")
     public ResponseEntity<?> reportIncident(@RequestBody IncidentReport report) {
@@ -55,7 +57,10 @@ public class OperatorController {
     }
     @PostMapping("/delays")
     public ResponseEntity<?> postDelay(@RequestBody DelayEvent delay) {
-        delay.setStatus("ACTIVE"); delay.setCreatedAt(new Date());
+        delay.setStatus("ACTIVE");
+        delay.setSeverity(delay.getSeverity() != null ? delay.getSeverity().toUpperCase() : "LOW"); delay.setCreatedAt(new Date());
+        if (delay.getEventId() == null) delay.setEventId("OPR-" + System.currentTimeMillis());
+        if (delay.getType() == null) delay.setType("Operator Report");
         return ResponseEntity.ok(delayEventRepository.save(delay));
     }
     @PutMapping("/delays/{id}/resolve")
@@ -85,6 +90,17 @@ public class OperatorController {
         log.setTotalHours(Math.round(d.toMinutes() / 60.0 * 100.0) / 100.0);
         return ResponseEntity.ok(workLogRepository.save(log));
     }
+    @GetMapping("/fixdelays")
+    public ResponseEntity<?> fixDelays() {
+        List<DelayEvent> all = delayEventRepository.findAll();
+        for (DelayEvent d : all) {
+            if (d.getEventId() == null) d.setEventId("OPR-" + System.currentTimeMillis());
+            if (d.getType() == null) d.setType("Operator Report");
+            delayEventRepository.save(d);
+        }
+        return ResponseEntity.ok("Fixed " + all.size() + " delays");
+    }
+
     @GetMapping("/clockstatus/{employeeId}")
     public ResponseEntity<?> getClockStatus(@PathVariable Long employeeId) {
         return ResponseEntity.ok(workLogRepository.findByEmployeeIdAndClockOutIsNull(employeeId).isPresent());

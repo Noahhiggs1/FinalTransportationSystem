@@ -1,1 +1,9 @@
-[{"_id":{"$oid":"69c43fb1588a328ccf901c15"},"event_id":"DEL-992","type":"Maintenance","severity":"High","affected_lines":["Blue","Silver"],"estimated_delay_minutes":25,"status":"Active","timestamp":{"$date":"2026-03-25T20:04:01.063Z"}}]
+[
+  {"_id":{"$oid":"69c43fb1588a328ccf901c15"},"event_id":"DEL-992","type":"Maintenance","severity":"High","affected_lines":["Blue","Silver"],"estimated_delay_minutes":25,"status":"Active","timestamp":{"$date":"2026-03-25T20:04:01.063Z"}},
+  {"_id":{"$oid":"69c44100588a328ccf901c26"},"event_id":"DEL-993","type":"Weather","severity":"Medium","affected_lines":["Atlantic Regional"],"estimated_delay_minutes":15,"status":"Active","timestamp":{"$date":"2026-03-26T08:00:00.000Z"}},
+  {"_id":{"$oid":"69c44110588a328ccf901c27"},"event_id":"DEL-994","type":"Signal Failure","severity":"High","affected_lines":["Northeast Express"],"estimated_delay_minutes":40,"status":"Resolved","timestamp":{"$date":"2026-03-26T09:30:00.000Z"}},
+  {"_id":{"$oid":"69c44120588a328ccf901c28"},"event_id":"DEL-995","type":"Track Inspection","severity":"Low","affected_lines":["Capital Corridor"],"estimated_delay_minutes":10,"status":"Active","timestamp":{"$date":"2026-03-26T11:00:00.000Z"}},
+  {"_id":{"$oid":"69c44130588a328ccf901c29"},"event_id":"DEL-996","type":"Equipment Failure","severity":"High","affected_lines":["Great Lakes Line"],"estimated_delay_minutes":60,"status":"Active","timestamp":{"$date":"2026-03-26T12:30:00.000Z"}},
+  {"_id":{"$oid":"69c44140588a328ccf901c30"},"event_id":"DEL-997","type":"Passenger Incident","severity":"Medium","affected_lines":["Southern Crescent"],"estimated_delay_minutes":20,"status":"Resolved","timestamp":{"$date":"2026-03-26T14:00:00.000Z"}},
+  {"_id":{"$oid":"69c44150588a328ccf901c31"},"event_id":"DEL-998","type":"Power Outage","severity":"High","affected_lines":["Northeast Express","Atlantic Regional"],"estimated_delay_minutes":45,"status":"Active","timestamp":{"$date":"2026-03-26T15:30:00.000Z"}}
+]

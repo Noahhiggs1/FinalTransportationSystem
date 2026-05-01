@@ -29,7 +29,7 @@ const COLORS = {
 
 export default function OperatorDashboard() {
   const navigate = useNavigate();
-  const employeeId = sessionStorage.getItem('employeeId');
+  const employeeId = sessionStorage.getItem('employeeId') || sessionStorage.getItem('userId');
   const userName = sessionStorage.getItem('userName');
   const userEmail = sessionStorage.getItem('userEmail');
 

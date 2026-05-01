@@ -53,6 +53,8 @@ export default function LoginPage() {
               sessionStorage.setItem('userId', user.userId);
               sessionStorage.setItem('userRole', user.role || 'customer');
               sessionStorage.setItem('userName', user.firstName + ' ' + user.lastName);
+              sessionStorage.setItem('employeeId', user.employeeId ? user.employeeId : user.userId);
+              sessionStorage.setItem('employeeId', user.employeeId || '');
 
               setIsError(false);
               setMessage('✅ Login successful! Redirecting...');
