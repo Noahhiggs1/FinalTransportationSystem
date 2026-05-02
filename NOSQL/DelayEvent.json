@@ -1,9 +1,10 @@
 [
-  {"eventId":"DEL-992","type":"Maintenance","severity":"HIGH","affectedLines":["Blue","Silver"],"estimatedDelayMinutes":25,"status":"Active","message":"Scheduled maintenance causing delays on Blue and Silver lines","timestamp":{"$date":"2026-03-25T20:04:01.063Z"}},
-  {"eventId":"DEL-993","type":"Weather","severity":"MEDIUM","affectedLines":["Atlantic Regional"],"estimatedDelayMinutes":15,"status":"Active","message":"Storm weather affecting Atlantic Regional service","timestamp":{"$date":"2026-03-26T08:00:00.000Z"}},
-  {"eventId":"DEL-994","type":"Signal Failure","severity":"HIGH","affectedLines":["Northeast Express"],"estimatedDelayMinutes":40,"status":"Resolved","message":"Signal failure on Northeast Express line now resolved","timestamp":{"$date":"2026-03-26T09:30:00.000Z"}},
-  {"eventId":"DEL-995","type":"Track Inspection","severity":"LOW","affectedLines":["Capital Corridor"],"estimatedDelayMinutes":10,"status":"Active","message":"Routine track inspection causing minor delays on Capital Corridor","timestamp":{"$date":"2026-03-26T11:00:00.000Z"}},
-  {"eventId":"DEL-996","type":"Equipment Failure","severity":"HIGH","affectedLines":["Great Lakes Line"],"estimatedDelayMinutes":60,"status":"Active","message":"Equipment failure causing significant delays on Great Lakes Line","timestamp":{"$date":"2026-03-26T12:30:00.000Z"}},
-  {"eventId":"DEL-997","type":"Passenger Incident","severity":"MEDIUM","affectedLines":["Southern Crescent"],"estimatedDelayMinutes":20,"status":"Resolved","message":"Passenger incident on Southern Crescent now resolved","timestamp":{"$date":"2026-03-26T14:00:00.000Z"}},
-  {"eventId":"DEL-998","type":"Power Outage","severity":"HIGH","affectedLines":["Northeast Express","Atlantic Regional"],"estimatedDelayMinutes":45,"status":"Active","message":"Power outage affecting Northeast Express and Atlantic Regional lines","timestamp":{"$date":"2026-03-26T15:30:00.000Z"}}
+  {"routeId":"Line-A-Red","stationOrigin":"Central Station","stationDestination":"North Park","peakHour":"08:00-09:00","averageVolume":450,"lastUpdated":{"$date":"2026-03-25T20:03:56.734Z"}},
+  {"routeId":"Atlantic Regional","stationOrigin":"Virginia Beach","stationDestination":"New York City","peakHour":"07:00-09:00","averageVolume":520,"lastUpdated":{"$date":"2026-03-26T08:00:00.000Z"}},
+  {"routeId":"Northeast Express","stationOrigin":"Washington DC","stationDestination":"Boston","peakHour":"06:00-08:00","averageVolume":680,"lastUpdated":{"$date":"2026-03-26T09:00:00.000Z"}},
+  {"routeId":"Capital Corridor","stationOrigin":"Richmond","stationDestination":"Washington DC","peakHour":"08:00-10:00","averageVolume":390,"lastUpdated":{"$date":"2026-03-26T10:00:00.000Z"}},
+  {"routeId":"Great Lakes Line","stationOrigin":"Chicago","stationDestination":"Detroit","peakHour":"09:00-11:00","averageVolume":410,"lastUpdated":{"$date":"2026-03-26T11:00:00.000Z"}},
+  {"routeId":"Southern Crescent","stationOrigin":"Atlanta","stationDestination":"Nashville","peakHour":"10:00-12:00","averageVolume":350,"lastUpdated":{"$date":"2026-03-26T12:00:00.000Z"}},
+  {"routeId":"Atlantic Regional","stationOrigin":"Norfolk","stationDestination":"Philadelphia","peakHour":"17:00-19:00","averageVolume":495,"lastUpdated":{"$date":"2026-03-26T13:00:00.000Z"}},
+  {"routeId":"Northeast Express","stationOrigin":"New York City","stationDestination":"Boston","peakHour":"16:00-18:00","averageVolume":720,"lastUpdated":{"$date":"2026-03-26T14:00:00.000Z"}}
 ]
