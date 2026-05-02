@@ -10,9 +10,6 @@ Before running this project, make sure you have the following installed:
 
 * **Node.js & npm** (required for React)
 * **Java (JDK)**
-* **VS Code Extensions:**
-
-  * Spring Boot Extension Pack
 
 ---
 
@@ -46,8 +43,7 @@ spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name
 ### Backend (Spring Boot)
 
 1. Open the project in VS Code
-2. Make sure the Spring Boot extensions are installed
-3. Run the application using:
+2. Run the application using:
 
    * VS Code Run button
      OR
@@ -56,7 +52,10 @@ spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name
      ```
      ./gradlew.bat bootRun --no-daemon
      ```
-
+     or
+     ```
+      ./gradlew.bat bootRun --no-daemon
+     ```
 ---
 
 ### Frontend (React)
