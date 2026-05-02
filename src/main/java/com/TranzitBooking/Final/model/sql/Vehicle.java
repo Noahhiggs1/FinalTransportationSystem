@@ -22,4 +22,4 @@ public class Vehicle {
     public void setRouteId(Long routeId) { this.routeId = routeId; }
     public Long getEmployeeId() { return employeeId; }
     public void setEmployeeId(Long employeeId) { this.employeeId = employeeId; }
-}
+    }
