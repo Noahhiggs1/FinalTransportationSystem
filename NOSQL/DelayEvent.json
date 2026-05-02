@@ -1,13 +1,9 @@
 [
-  {"_id":{"$oid":"69c43fb1588a328ccf901c15"},"event_id":"DEL-992","type":"Maintenance","severity":"High","affected_lines":["Blue","Silver"],"estimated_delay_minutes":25,"status":"Active","timestamp":{"$date":"2026-03-25T20:04:01.063Z"}},
-  {"_id":{"$oid":"69c44100588a328ccf901c26"},"event_id":"DEL-993","type":"Weather","severity":"Medium","affected_lines":["Atlantic Regional"],"estimated_delay_minutes":15,"status":"Active","timestamp":{"$date":"2026-03-26T08:00:00.000Z"}},
-  {"_id":{"$oid":"69c44110588a328ccf901c27"},"event_id":"DEL-994","type":"Signal Failure","severity":"High","affected_lines":["Northeast Express"],"estimated_delay_minutes":40,"status":"Resolved","timestamp":{"$date":"2026-03-26T09:30:00.000Z"}},
-  {"_id":{"$oid":"69c44120588a328ccf901c28"},"event_id":"DEL-995","type":"Track Inspection","severity":"Low","affected_lines":["Capital Corridor"],"estimated_delay_minutes":10,"status":"Active","timestamp":{"$date":"2026-03-26T11:00:00.000Z"}},
-  {"_id":{"$oid":"69c44130588a328ccf901c29"},"event_id":"DEL-996","type":"Equipment Failure","severity":"High","affected_lines":["Great Lakes Line"],"estimated_delay_minutes":60,"status":"Active","timestamp":{"$date":"2026-03-26T12:30:00.000Z"}},
-  {"_id":{"$oid":"69c44140588a328ccf901c30"},"event_id":"DEL-997","type":"Passenger Incident","severity":"Medium","affected_lines":["Southern Crescent"],"estimated_delay_minutes":20,"status":"Resolved","timestamp":{"$date":"2026-03-26T14:00:00.000Z"}},
-  {"_id":{"$oid":"69c44150588a328ccf901c31"},"event_id":"DEL-998","type":"Power Outage","severity":"High","affected_lines":["Northeast Express","Atlantic Regional"],"estimated_delay_minutes":45,"status":"Active","timestamp":{"$date":"2026-03-26T15:30:00.000Z"}}
-<<<<<<< HEAD
+  {"eventId":"DEL-992","type":"Maintenance","severity":"HIGH","affectedLines":["Blue","Silver"],"estimatedDelayMinutes":25,"status":"Active","message":"Scheduled maintenance causing delays on Blue and Silver lines","timestamp":{"$date":"2026-03-25T20:04:01.063Z"}},
+  {"eventId":"DEL-993","type":"Weather","severity":"MEDIUM","affectedLines":["Atlantic Regional"],"estimatedDelayMinutes":15,"status":"Active","message":"Storm weather affecting Atlantic Regional service","timestamp":{"$date":"2026-03-26T08:00:00.000Z"}},
+  {"eventId":"DEL-994","type":"Signal Failure","severity":"HIGH","affectedLines":["Northeast Express"],"estimatedDelayMinutes":40,"status":"Resolved","message":"Signal failure on Northeast Express line now resolved","timestamp":{"$date":"2026-03-26T09:30:00.000Z"}},
+  {"eventId":"DEL-995","type":"Track Inspection","severity":"LOW","affectedLines":["Capital Corridor"],"estimatedDelayMinutes":10,"status":"Active","message":"Routine track inspection causing minor delays on Capital Corridor","timestamp":{"$date":"2026-03-26T11:00:00.000Z"}},
+  {"eventId":"DEL-996","type":"Equipment Failure","severity":"HIGH","affectedLines":["Great Lakes Line"],"estimatedDelayMinutes":60,"status":"Active","message":"Equipment failure causing significant delays on Great Lakes Line","timestamp":{"$date":"2026-03-26T12:30:00.000Z"}},
+  {"eventId":"DEL-997","type":"Passenger Incident","severity":"MEDIUM","affectedLines":["Southern Crescent"],"estimatedDelayMinutes":20,"status":"Resolved","message":"Passenger incident on Southern Crescent now resolved","timestamp":{"$date":"2026-03-26T14:00:00.000Z"}},
+  {"eventId":"DEL-998","type":"Power Outage","severity":"HIGH","affectedLines":["Northeast Express","Atlantic Regional"],"estimatedDelayMinutes":45,"status":"Active","message":"Power outage affecting Northeast Express and Atlantic Regional lines","timestamp":{"$date":"2026-03-26T15:30:00.000Z"}}
 ]
-=======
-]
->>>>>>> c45402b468dd25778c3fcf059a64b70c19b12755
