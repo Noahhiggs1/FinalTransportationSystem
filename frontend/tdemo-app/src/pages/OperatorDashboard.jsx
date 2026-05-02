@@ -813,13 +813,7 @@ export default function OperatorDashboard() {
               )}
             </div>
           )}
-        <div style={{ marginTop: '1.5rem' }}>
-          <h4 style={styles.subHeading}>Request Vehicle Service</h4>
-          <p style={{ color: COLORS.textSecondary, fontSize: '0.9rem', marginBottom: '1rem' }}>
-            If your vehicle needs maintenance or repairs, submit a service request to notify the admin.
-          </p>
-            {vehicle && <ServiceRequestForm vehicleId={vehicle.vehicleId} employeeId={employeeId} BASE={BASE} />}        </div>
-          {/* INCIDENTS */}
+        {/* INCIDENTS */}
           {activeTab === 'incidents' && (
             <div>
               <div style={styles.tabHeader}>
@@ -1312,6 +1306,7 @@ function Badge({ label, bg, color, border }) {
     </span>
   );
 }
+
 function ServiceRequestForm({ vehicleId, employeeId, BASE }) {
   const [reason, setReason] = useState('');
   const [msg, setMsg] = useState({ text: '', type: '' });
