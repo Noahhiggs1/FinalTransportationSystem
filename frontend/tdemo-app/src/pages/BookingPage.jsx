@@ -274,7 +274,7 @@ fetch(`http://localhost:8081/api/bookings/booked-seats/${vehicle.vehicleId}`)
               </div>
               <div style={{ marginBottom: '1rem' }}>
                 <label style={payLabel}>Card Number</label>
-                <input placeholder="1234 5678 9012 3456" value={cardNumber} type="password" onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim().substring(0, 19))} style={payInput} />
+                <input placeholder="1234 5678 9012 3456" value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim().substring(0, 19))} style={payInput} />
               </div>
               <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div style={{ flex: 1 }}>
