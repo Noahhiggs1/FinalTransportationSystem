@@ -47,21 +47,19 @@ export default function BookingPage() {
       .finally(() => setLoading(false));
   };
 
-  const handleVehicleSelect = (vehicle) => {
+  
+const handleVehicleSelect = (vehicle) => {
     setSelectedVehicle(vehicle);
     setSelectedSeat(null);
-    fetch(`http://localhost:8081/api/seats/vehicle/${vehicle.vehicleId}`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setBookedSeats(data);
-        } else {
-          setBookedSeats([]);
-        }
-      })
-      .catch(() => setBookedSeats([]));
+fetch(`http://localhost:8081/api/bookings/booked-seats/${vehicle.vehicleId}`)
+  .then(res => res.json())
+  .then(data => {
+    console.log('booked seats:', data);
+    setBookedSeats(Array.isArray(data) ? data : []);
+  })
+  .catch(() => setBookedSeats([]));
   };
-
+  
   const getPrice = (vehicle) => {
     if (!vehicle) return 0;
     const base = 35;
@@ -225,14 +223,16 @@ export default function BookingPage() {
               <span style={{ width: 20, height: 20, background: '#222', borderRadius: 4, display: 'inline-block' }}></span> Taken
             </span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: '8px', margin: '1rem 0', maxWidth: '500px' }}>
-            {((() => { const cols = ['A','B','C','D','E','F']; const seats = []; for(let r=1; r<=Math.ceil(selectedVehicle.capacity/cols.length); r++) { for(let c=0; c<cols.length && seats.length<selectedVehicle.capacity; c++) { seats.push(r+cols[c]); } } return seats; })()).map(seat => { const taken = bookedSeats.includes(seat);
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 48px) 2rem repeat(3, 48px)', gap: '8px', margin: '1rem 0' }}>
+            {((() => { const cols = ['A','B','C','D','E','F']; const seats = []; for(let r=1; r<=Math.ceil(selectedVehicle.capacity/cols.length); r++) { for(let c=0; c<cols.length && seats.length<selectedVehicle.capacity; c++) { seats.push(r+cols[c]); } } return seats; })()).flatMap(seat => {
+              const taken = bookedSeats.includes(seat);
               const isSelected = selectedSeat === seat;
-              return (
-                <button key={seat} disabled={taken} onClick={() => !taken && setSelectedSeat(seat)} title={taken ? 'Already booked' : `Seat ${seat}`} style={{ height: '44px', borderRadius: '8px', border: isSelected ? '2px solid #667eea' : '1px solid #ddd', background: taken ? '#222' : isSelected ? '#667eea' : '#f9f9f9', color: taken ? '#555' : isSelected ? '#fff' : '#333', cursor: taken ? 'not-allowed' : 'pointer', fontWeight: isSelected ? 'bold' : 'normal', fontSize: '0.8rem' }}>
-                  {seat}
+              const btn = (
+                <button key={seat} disabled={taken} onClick={() => !taken && setSelectedSeat(seat)} title={taken ? 'Already booked' : `Seat ${seat}`} style={{ width: '48px', height: '44px', borderRadius: '8px', border: isSelected ? '2px solid #667eea' : taken ? '1px solid #111' : '1px solid #ddd', background: taken ? '#2a2a2a' : isSelected ? '#667eea' : '#f9f9f9', color: taken ? '#555' : isSelected ? '#fff' : '#333', cursor: taken ? 'not-allowed' : 'pointer', fontWeight: isSelected ? 'bold' : 'normal', fontSize: '0.78rem' }}>
+                  {taken ? '✕' : seat}
                 </button>
               );
+              return seat.endsWith('C') ? [btn, <div key={seat + '-aisle'} />] : [btn];
             })}
           </div>
           {selectedSeat && (
@@ -274,7 +274,7 @@ export default function BookingPage() {
               </div>
               <div style={{ marginBottom: '1rem' }}>
                 <label style={payLabel}>Card Number</label>
-                <input placeholder="1234 5678 9012 3456" value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim().substring(0, 19))} style={payInput} />
+                <input placeholder="1234 5678 9012 3456" value={cardNumber} type="password" onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim().substring(0, 19))} style={payInput} />
               </div>
               <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div style={{ flex: 1 }}>

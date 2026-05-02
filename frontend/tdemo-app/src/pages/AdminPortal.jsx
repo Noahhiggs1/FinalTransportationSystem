@@ -12,6 +12,7 @@ const TABS = [
   { id: "tickets",   label: "Tickets" },
   { id: "refunds",   label: "Refunds" },
   { id: "patterns",  label: "Patterns" },
+  { id: "incidents", label: "Service Requests" },
 ];
 
 const STATUS_COLORS = {
@@ -484,6 +485,7 @@ const TAB_COMPONENTS = {
   tickets: TicketsTab,
   refunds: RefundsTab,
   patterns: PatternsTab,
+  incidents: IncidentsTab,
 };
 
 export default function AdminPortal() {
@@ -541,5 +543,39 @@ export default function AdminPortal() {
     </div>
   );
 }
-
+// ─── Incidents Tab ─────────────────────────────────────────────────────────────
+function IncidentsTab() {
+  const { data, loading, error } = useFetch(`${BASE}/analytics/incidents/all`);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p style={{ color: 'red' }}>Failed to load incidents.</p>;
+  const rows = Array.isArray(data) ? data : [];
+  const serviceRequests = rows.filter(r => r.title?.startsWith('Service Request'));
+  const incidents = rows.filter(r => !r.title?.startsWith('Service Request'));
+  return (
+    <div>
+      <SectionCard title={`Service Requests (${serviceRequests.length})`}>
+        <Table
+          columns={["title", "description", "severity", "status", "vehicleId", "reportedAt"]}
+          rows={serviceRequests}
+          renderCell={(col, row) => {
+            if (col === "reportedAt") return row.reportedAt ? new Date(row.reportedAt).toLocaleString() : "--";
+            if (col === "vehicleId") return row.vehicleId ? "Vehicle #" + row.vehicleId : "--";
+            return row[col] ?? "--";
+          }}
+        />
+      </SectionCard>
+      <SectionCard title={`Incident Reports (${incidents.length})`}>
+        <Table
+          columns={["title", "description", "severity", "status", "employeeId", "reportedAt"]}
+          rows={incidents}
+          renderCell={(col, row) => {
+            if (col === "reportedAt") return row.reportedAt ? new Date(row.reportedAt).toLocaleString() : "--";
+            if (col === "employeeId") return row.employeeId ? "Employee #" + row.employeeId : "--";
+            return row[col] ?? "--";
+          }}
+        />
+      </SectionCard>
+    </div>
+  );
+}
 

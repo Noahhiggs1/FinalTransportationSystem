@@ -51,4 +51,7 @@ public class DelayService {
         }
         return "MINOR delay - " + event.getSeverity();
     }
+    public List<DelayEvent> getAllDelays() {
+    return delayEventRepository.findAll();
+    }
 }

@@ -105,4 +105,17 @@ public class OperatorController {
     public ResponseEntity<?> getClockStatus(@PathVariable Long employeeId) {
         return ResponseEntity.ok(workLogRepository.findByEmployeeIdAndClockOutIsNull(employeeId).isPresent());
     }
+    @PostMapping("/vehicle/{vehicleId}/service-request")
+public ResponseEntity<?> requestService(@PathVariable Long vehicleId, @RequestBody java.util.Map<String, String> body) {
+    IncidentReport report = new IncidentReport();
+    report.setTitle("Service Request - Vehicle #" + vehicleId);
+    report.setDescription(body.getOrDefault("reason", "Operator requested vehicle service"));
+    report.setSeverity("MEDIUM");
+    report.setStatus("OPEN");
+    report.setVehicleId(vehicleId);
+    report.setEmployeeId(body.get("employeeId") != null ? Long.parseLong(body.get("employeeId")) : null);
+    report.setReportedAt(new java.util.Date());
+    return ResponseEntity.ok(incidentReportMongoRepository.save(report));
+}
+
 }

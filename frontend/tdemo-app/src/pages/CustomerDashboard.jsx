@@ -9,6 +9,7 @@ export default function CustomerDashboard() {
   const userName = sessionStorage.getItem('userName');
   const userEmail = sessionStorage.getItem('userEmail');
   const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+  const [delays, setDelays] = useState([]);
 
   // If not logged in redirect to login page
   useEffect(() => {
@@ -41,12 +42,14 @@ export default function CustomerDashboard() {
       fetch(`http://localhost:8081/api/notifications/user/${userId}`).then(r => r.json()),
       fetch(`http://localhost:8081/api/refunds/user/${userId}`).then(r => r.json()),
       fetch('http://localhost:8081/api/routes').then(r => r.json()),
+      fetch('http://localhost:8081/api/delays/active').then(r => r.json()),
     ])
-      .then(([ticketsData, notifData, refundData, routesData]) => {
+      .then(([ticketsData, notifData, refundData, routesData, delayData]) => {
         setTickets(Array.isArray(ticketsData) ? ticketsData : []);
         setNotifications(Array.isArray(notifData) ? notifData : []);
         setRefunds(Array.isArray(refundData) ? refundData : []);
         setRoutes(Array.isArray(routesData) ? routesData : []);
+        setDelays(Array.isArray(delayData) ? delayData : []);
       })
       .catch(err => console.error('Error loading dashboard data:', err))
       .finally(() => setLoading(false));
@@ -126,6 +129,19 @@ export default function CustomerDashboard() {
 
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+
+      {delays.length > 0 && (
+        <div style={{ background: '#fff3e0', border: '1px solid #ffcc80', borderRadius: '10px', padding: '1rem 1.25rem', marginBottom: '1.5rem' }}>
+          <div style={{ fontWeight: 'bold', color: '#e65100', marginBottom: '0.5rem' }}>⚠️ Active Service Alerts ({delays.length})</div>
+          {delays.map(d => (
+            <div key={d.id} style={{ padding: '0.5rem 0', borderBottom: '1px solid #ffe0b2', fontSize: '0.9rem', color: '#bf360c' }}>
+              <strong>{d.severity}</strong> — {d.message || d.type}
+              {d.estimatedDelayMinutes && <span style={{ marginLeft: '0.5rem', color: '#e65100' }}>~{d.estimatedDelayMinutes} min delay</span>}
+              {d.affectedLines?.length > 0 && <span style={{ marginLeft: '0.5rem', color: '#999' }}>({d.affectedLines.join(', ')})</span>}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Header */}
       <div style={{

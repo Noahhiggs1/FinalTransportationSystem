@@ -813,7 +813,12 @@ export default function OperatorDashboard() {
               )}
             </div>
           )}
-
+        <div style={{ marginTop: '1.5rem' }}>
+          <h4 style={styles.subHeading}>Request Vehicle Service</h4>
+          <p style={{ color: COLORS.textSecondary, fontSize: '0.9rem', marginBottom: '1rem' }}>
+            If your vehicle needs maintenance or repairs, submit a service request to notify the admin.
+          </p>
+            {vehicle && <ServiceRequestForm vehicleId={vehicle.vehicleId} employeeId={employeeId} BASE={BASE} />}        </div>
           {/* INCIDENTS */}
           {activeTab === 'incidents' && (
             <div>
@@ -1307,7 +1312,47 @@ function Badge({ label, bg, color, border }) {
     </span>
   );
 }
+function ServiceRequestForm({ vehicleId, employeeId, BASE }) {
+  const [reason, setReason] = useState('');
+  const [msg, setMsg] = useState({ text: '', type: '' });
+  const [loading, setLoading] = useState(false);
 
+  const handleSubmit = () => {
+    if (!reason) { setMsg({ text: 'Please describe the issue.', type: 'error' }); return; }
+    setLoading(true);
+    fetch(`${BASE}/operator/vehicle/${vehicleId}/service-request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason, employeeId })
+    })
+      .then(r => r.json())
+      .then(() => {
+        setMsg({ text: '✅ Service request submitted. Admin has been notified.', type: 'success' });
+        setReason('');
+      })
+      .catch(() => setMsg({ text: '❌ Failed to submit service request.', type: 'error' }))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <div>
+      <textarea
+        rows={3}
+        placeholder="Describe the issue. Example: Brakes making noise, needs inspection."
+        value={reason}
+        onChange={e => setReason(e.target.value)}
+        style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #ddd', fontSize: '0.9rem', boxSizing: 'border-box', resize: 'vertical' }}
+      />
+      {msg.text && (
+        <p style={{ color: msg.type === 'success' ? '#166534' : '#991b1b', fontSize: '0.85rem', margin: '0.5rem 0' }}>{msg.text}</p>
+      )}
+      <button onClick={handleSubmit} disabled={loading}
+        style={{ marginTop: '0.5rem', padding: '0.6rem 1.4rem', background: '#1a1a2e', color: '#fff', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}>
+        {loading ? 'Submitting...' : 'Submit Service Request'}
+      </button>
+    </div>
+  );
+}
 const styles = {
   tabHeader: {
     marginBottom: '20px',

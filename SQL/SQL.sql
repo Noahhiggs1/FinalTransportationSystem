@@ -277,7 +277,6 @@ CROSS JOIN (
 ) cols;
 
 ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS employee_id INT;
-ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS role VARCHAR(20) DEFAULT 'customer';
 
 CREATE TABLE IF NOT EXISTS work_log (
     log_id SERIAL PRIMARY KEY,
