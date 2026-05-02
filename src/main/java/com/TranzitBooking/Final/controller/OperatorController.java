@@ -23,6 +23,8 @@ public class OperatorController {
     @Autowired private IncidentReportMongoRepository incidentReportMongoRepository;
     @Autowired private WorkLogRepository workLogRepository;
     @Autowired private VehicleRepository vehicleRepository;
+    @Autowired private com.TranzitBooking.Final.repository.NotificationRepository notificationRepository;
+    @Autowired private com.TranzitBooking.Final.repository.UserProfileRepository userProfileRepository;
     @GetMapping("/vehicle/{employeeId}")
     public ResponseEntity<?> getAssignedVehicle(@PathVariable Long employeeId) {
         List<Vehicle> vehicles = vehicleRepository.findByEmployeeId(employeeId);
@@ -58,12 +60,29 @@ public class OperatorController {
     @PostMapping("/delays")
     public ResponseEntity<?> postDelay(@RequestBody DelayEvent delay) {
         delay.setStatus("ACTIVE");
-        delay.setSeverity(delay.getSeverity() != null ? delay.getSeverity().toUpperCase() : "LOW"); delay.setCreatedAt(new Date());
+        delay.setSeverity(delay.getSeverity() != null ? delay.getSeverity().toUpperCase() : "LOW");
+        delay.setCreatedAt(new Date());
         if (delay.getEventId() == null) delay.setEventId("OPR-" + System.currentTimeMillis());
         if (delay.getType() == null) delay.setType("Operator Report");
-        return ResponseEntity.ok(delayEventRepository.save(delay));
+        DelayEvent saved = delayEventRepository.save(delay);
+
+        // Create a notification for all users
+        String message = "⚠️ Delay Alert: " + saved.getMessage()
+            + (saved.getEstimatedDelayMinutes() != null ? " (~" + saved.getEstimatedDelayMinutes() + " min)" : "");
+
+        List<com.TranzitBooking.Final.model.sql.UserProfile> allUsers = userProfileRepository.findAll();
+        for (com.TranzitBooking.Final.model.sql.UserProfile user : allUsers) {
+            com.TranzitBooking.Final.model.sql.Notification n = new com.TranzitBooking.Final.model.sql.Notification();
+            n.setUserId(user.getUserId());
+            n.setMessage(message);
+            n.setNotificationType("DELAY");
+            n.setRead(false);
+            n.setCreatedAt(java.time.LocalDateTime.now());
+            notificationRepository.save(n);
+        }
+        return ResponseEntity.ok(saved);
     }
-    @PutMapping("/delays/{id}/resolve")
+        @PutMapping("/delays/{id}/resolve")
     public ResponseEntity<?> resolveDelay(@PathVariable String id) {
         return delayEventRepository.findById(id)
             .map(d -> { d.setStatus("RESOLVED"); d.setResolvedAt(new Date()); return ResponseEntity.ok(delayEventRepository.save(d)); })
